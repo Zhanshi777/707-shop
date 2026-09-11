@@ -163,7 +163,7 @@
         const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRlYXJranNkYmlvY2JvYWdlbXppIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODkwOTE2OTcsImV4cCI6MjEwNDY2NzY5N30.zpMfihJUif20iHpoK__xNHtD8cIihHz_lfxq-Z9bLU0";
         const ADMIN_PASSWORD = "707123"; // 你的后台密码，可在此处更改
 
-        const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
         let isAdmin = false;
         let goodsData = [], ordersData = [], teamsData = [];
 
