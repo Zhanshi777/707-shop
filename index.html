@@ -79,7 +79,10 @@
 
                 <!-- 订单列表 -->
                 <div class="md:col-span-2 mc-card p-5 space-y-4">
-                    <h2 class="text-lg font-bold text-slate-200 border-b border-slate-700 pb-2">公共订单看板</h2>
+                    <div class="flex justify-between items-center border-b border-slate-700 pb-2">
+                        <h2 class="text-lg font-bold text-slate-200">公共订单看板</h2>
+                        <span id="order-notice-tag" class="text-xs text-slate-400">仅显示审核/公示的订单</span>
+                    </div>
                     <div id="orders-list" class="space-y-3 max-h-[600px] overflow-y-auto pr-1">
                         <!-- 订单记录 -->
                     </div>
@@ -96,7 +99,7 @@
                     <form id="team-form" onsubmit="handleCreateTeam(event)" class="space-y-3 text-sm">
                         <div>
                             <label class="block text-xs text-slate-400 mb-1">副本名称</label>
-                            <input type="text" id="team-dungeon" placeholder="例如：暮色森林 / 终末之地" required class="w-full p-2 bg-slate-900 border border-slate-700 rounded focus:border-sky-500 outline-none">
+                            <input type="text" id="team-dungeon" placeholder="例如：末地远征（万象普通）、地牢（噩梦）" required class="w-full p-2 bg-slate-900 border border-slate-700 rounded focus:border-sky-500 outline-none">
                         </div>
                         <div>
                             <label class="block text-xs text-slate-400 mb-1">队长 ID</label>
@@ -146,10 +149,16 @@
                 <div class="bg-slate-900/60 p-4 rounded-lg border border-slate-700 space-y-3">
                     <h4 class="font-bold text-emerald-400">发布 / 编辑商品</h4>
                     <input type="text" id="add-goods-title" placeholder="商品名称" class="w-full p-2 bg-slate-800 border border-slate-700 rounded">
-                    <input type="text" id="add-goods-price" placeholder="报价（例如：10 绿宝石 / 个）" class="w-full p-2 bg-slate-800 border border-slate-700 rounded">
-                    <input type="text" id="add-goods-img" placeholder="图片 URL 链接" class="w-full p-2 bg-slate-800 border border-slate-700 rounded">
+                    <input type="text" id="add-goods-price" placeholder="报价（例如：100000）" class="w-full p-2 bg-slate-800 border border-slate-700 rounded">
+                    
+                    <div>
+                        <label class="block text-xs text-slate-400 mb-1">商品图片（点击上传本地图片）</label>
+                        <input type="file" id="add-goods-file" accept="image/*" class="w-full p-1 bg-slate-800 border border-slate-700 rounded text-xs text-slate-300">
+                    </div>
+
                     <textarea id="add-goods-desc" placeholder="商品详细说明..." class="w-full p-2 bg-slate-800 border border-slate-700 rounded"></textarea>
-                    <button onclick="handleAddGoods()" class="w-full py-2 bg-emerald-600 hover:bg-emerald-500 font-bold rounded">保存商品</button>
+                    
+                    <button id="save-btn" onclick="handleAddGoods()" class="w-full py-2 bg-emerald-600 hover:bg-emerald-500 font-bold rounded">保存商品</button>
                 </div>
             </div>
         </div>
@@ -195,7 +204,7 @@
         /* ----- 商品逻辑 ----- */
         async function loadGoods() {
             if (!dbClient) return;
-            const { data, error } = await dbClient.from('goods').select('*').order('id', { ascending: false });
+            const { data } = await dbClient.from('goods').select('*').order('id', { ascending: false });
             goodsData = data || [];
             renderGoods();
         }
@@ -215,8 +224,8 @@
             container.innerHTML = list.map(g => `
                 <div class="mc-card overflow-hidden flex flex-col justify-between group">
                     <div>
-                        <div class="h-40 bg-slate-900 relative overflow-hidden flex items-center justify-center">
-                            ${g.image_url ? `<img src="${g.image_url}" class="object-cover w-full h-full group-hover:scale-105 transition duration-300" alt="${g.title}">` : `<span class="text-slate-600">暂无图片</span>`}
+                        <div class="h-48 bg-slate-900 relative overflow-hidden flex items-center justify-center p-2">
+                            ${g.image_url ? `<img src="${g.image_url}" class="max-h-full max-w-full object-contain rounded" alt="${g.title}">` : `<span class="text-slate-600">暂无图片</span>`}
                         </div>
                         <div class="p-4 space-y-2">
                             <h3 class="font-bold text-base text-slate-100">${g.title}</h3>
@@ -234,13 +243,47 @@
         async function handleAddGoods() {
             const title = document.getElementById('add-goods-title').value;
             const price = document.getElementById('add-goods-price').value;
-            const image_url = document.getElementById('add-goods-img').value;
+            const fileInput = document.getElementById('add-goods-file');
             const description = document.getElementById('add-goods-desc').value;
+            const btn = document.getElementById('save-btn');
 
             if (!title || !price) return alert('商品名称和报价必填！');
 
+            let image_url = '';
+
+            if (fileInput.files.length > 0) {
+                btn.innerText = "上传图片中...";
+                btn.disabled = true;
+                const file = fileInput.files[0];
+                const fileName = `${Date.now()}_${file.name}`;
+                
+                const { data: uploadData, error: uploadError } = await dbClient.storage
+                    .from('shop-images')
+                    .upload(fileName, file);
+
+                if (uploadError) {
+                    alert('图片上传失败: ' + uploadError.message);
+                    btn.innerText = "保存商品";
+                    btn.disabled = false;
+                    return;
+                }
+
+                const { data: urlData } = dbClient.storage.from('shop-images').getPublicUrl(fileName);
+                image_url = urlData.publicUrl;
+            }
+
+            btn.innerText = "保存中...";
             await dbClient.from('goods').insert([{ title, price, image_url, description }]);
+            
             alert('添加成功！');
+            btn.innerText = "保存商品";
+            btn.disabled = false;
+            
+            document.getElementById('add-goods-title').value = '';
+            document.getElementById('add-goods-price').value = '';
+            document.getElementById('add-goods-file').value = '';
+            document.getElementById('add-goods-desc').value = '';
+
             loadGoods();
             closeAdminModal();
         }
@@ -262,16 +305,23 @@
         function renderOrders() {
             const container = document.getElementById('orders-list');
             if (!container) return;
-            if (ordersData.length === 0) {
-                container.innerHTML = `<p class="text-slate-500 text-center py-6 text-xs">暂无订单需求</p>`;
+
+            // 管理员看全部，非管理员只看公示 (is_public === true) 的订单
+            const displayOrders = isAdmin ? ordersData : ordersData.filter(o => o.is_public === true);
+
+            if (displayOrders.length === 0) {
+                container.innerHTML = `<p class="text-slate-500 text-center py-6 text-xs">${isAdmin ? '暂无订单' : '暂无公共展示的订单需求'}</p>`;
                 return;
             }
 
-            container.innerHTML = ordersData.map(o => `
-                <div class="bg-slate-900/80 p-3 rounded-lg border border-slate-700 text-xs space-y-1">
+            container.innerHTML = displayOrders.map(o => `
+                <div class="bg-slate-900/80 p-3 rounded-lg border ${o.is_public ? 'border-emerald-500/40' : 'border-slate-700'} text-xs space-y-1">
                     <div class="flex justify-between items-center text-slate-300">
-                        <span class="font-bold text-emerald-400">玩家: ${o.player_id}</span>
-                        <span class="px-2 py-0.5 rounded text-[10px] ${o.status === '已完成' ? 'bg-emerald-900/50 text-emerald-300' : 'bg-amber-900/50 text-amber-300'}">${o.status}</span>
+                        <div class="flex items-center space-x-2">
+                            <span class="font-bold text-emerald-400">玩家: ${o.player_id}</span>
+                            ${isAdmin ? `<span class="px-1.5 py-0.5 text-[10px] rounded ${o.is_public ? 'bg-emerald-900/60 text-emerald-300' : 'bg-slate-800 text-slate-400'}">${o.is_public ? '已公示' : '仅店主可见'}</span>` : ''}
+                        </div>
+                        <span class="px-2 py-0.5 rounded text-[10px] ${o.status === '已完成' ? 'bg-emerald-900/50 text-emerald-300' : 'bg-amber-900/50 text-amber-300'}">${o.status || '处理中'}</span>
                     </div>
                     <p class="text-slate-200">需求: ${o.items}</p>
                     <div class="flex justify-between text-slate-400 pt-1 text-[11px]">
@@ -279,10 +329,16 @@
                         <span>${new Date(o.created_at).toLocaleDateString()}</span>
                     </div>
                     ${o.note ? `<p class="text-slate-500 text-[10px]">备注: ${o.note}</p>` : ''}
+                    
                     ${isAdmin ? `
-                        <div class="pt-2 border-t border-slate-800 flex gap-2 justify-end">
-                            <button onclick="updateOrderStatus(${o.id}, '已完成')" class="text-emerald-400 hover:underline">标记完成</button>
-                            <button onclick="deleteOrder(${o.id})" class="text-rose-400 hover:underline">删除</button>
+                        <div class="pt-2 border-t border-slate-800/80 flex gap-3 justify-end items-center">
+                            <button onclick="togglePublicOrder(${o.id}, ${!o.is_public})" class="text-xs ${o.is_public ? 'text-amber-400' : 'text-sky-400'} hover:underline font-bold">
+                                ${o.is_public ? '取消公示' : '公示到看板'}
+                            </button>
+                            <button onclick="updateOrderStatus(${o.id}, '${o.status === '已完成' ? '处理中' : '已完成'}')" class="text-xs text-emerald-400 hover:underline">
+                                ${o.status === '已完成' ? '设为未完成' : '标记已完成'}
+                            </button>
+                            <button onclick="deleteOrder(${o.id})" class="text-xs text-rose-400 hover:underline">删除</button>
                         </div>
                     ` : ''}
                 </div>
@@ -296,9 +352,16 @@
             const contact = document.getElementById('order-contact').value;
             const note = document.getElementById('order-note').value;
 
-            await dbClient.from('orders').insert([{ player_id, items, contact, note }]);
-            alert('订单提交成功！');
+            // 默认 is_public 为 false（私密）
+            await dbClient.from('orders').insert([{ player_id, items, contact, note, is_public: false, status: '待处理' }]);
+            alert('订单提交成功！已私信提交给店主。');
             document.getElementById('order-form').reset();
+            loadOrders();
+        }
+
+        // 管理员切换公示状态
+        async function togglePublicOrder(id, is_public) {
+            await dbClient.from('orders').update({ is_public }).eq('id', id);
             loadOrders();
         }
 
@@ -308,6 +371,7 @@
         }
 
         async function deleteOrder(id) {
+            if (!confirm('确定删除该订单吗？')) return;
             await dbClient.from('orders').delete().eq('id', id);
             loadOrders();
         }
