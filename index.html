@@ -307,14 +307,20 @@
 
         async function handleCreateOrder(e) {
             e.preventDefault();
-            await dbClient.from('orders').insert([{ 
+            const { error } = await dbClient.from('orders').insert([{ 
                 player_id: document.getElementById('order-player').value,
                 items: document.getElementById('order-items').value,
                 contact: document.getElementById('order-contact').value,
                 note: document.getElementById('order-note').value,
                 is_public: false, status: '待处理'
             }]);
+
+            if (error) {
+                alert('提交失败: ' + error.message);
+                return;
+            }
             alert('提交成功！'); loadOrders();
+            document.getElementById('order-form').reset();
         }
 
         async function togglePublicOrder(id, is_public) { await dbClient.from('orders').update({ is_public }).eq('id', id); loadOrders(); }
@@ -350,14 +356,20 @@
 
         async function handleCreateSell(e) {
             e.preventDefault();
-            await dbClient.from('sell_ideas').insert([{ 
+            const { error } = await dbClient.from('sell_ideas').insert([{ 
                 player_id: document.getElementById('sell-player').value,
                 items: document.getElementById('sell-items').value,
                 contact: document.getElementById('sell-contact').value,
                 note: document.getElementById('sell-note').value,
                 is_public: false, status: '待联系'
             }]);
+
+            if (error) {
+                alert('提交失败: ' + error.message);
+                return;
+            }
             alert('提交成功！'); loadSells();
+            document.getElementById('sell-form').reset();
         }
 
         async function togglePublicSell(id, is_public) { await dbClient.from('sell_ideas').update({ is_public }).eq('id', id); loadSells(); }
@@ -365,8 +377,13 @@
 
         async function loadTeams() {
             if (!dbClient) return;
-            const { data } = await dbClient.from('teams').select('*').order('id', { ascending: false });
-            teamsData = data || []; renderTeams();
+            const { data, error } = await dbClient.from('teams').select('*').order('id', { ascending: false });
+            if (error) {
+                console.error("加载组队贴失败:", error);
+                return;
+            }
+            teamsData = data || []; 
+            renderTeams();
         }
 
         function renderTeams() {
@@ -427,7 +444,7 @@
 
         async function handleCreateTeam(e) {
             e.preventDefault();
-            await dbClient.from('teams').insert([{ 
+            const { error } = await dbClient.from('teams').insert([{ 
                 dungeon_name: document.getElementById('team-dungeon').value,
                 leader: document.getElementById('team-leader').value,
                 qq: document.getElementById('team-qq').value,
@@ -435,9 +452,16 @@
                 need_members: document.getElementById('team-need').value,
                 replies: [] 
             }]);
+
+            if (error) {
+                console.error("发布招募失败:", error);
+                alert("发布失败: " + error.message);
+                return;
+            }
+
             alert('组队招募发布成功！');
             document.getElementById('team-form').reset();
-            loadTeams();
+            await loadTeams();
         }
 
         async function handleReplyTeam(id) {
@@ -454,13 +478,20 @@
                 qq: qqInput.value 
             });
 
-            await dbClient.from('teams').update({ replies }).eq('id', id);
+            const { error } = await dbClient.from('teams').update({ replies }).eq('id', id);
+            if (error) {
+                alert("申请失败: " + error.message);
+                return;
+            }
             alert('成功申请进组！');
-            loadTeams();
+            await loadTeams();
         }
 
         async function deleteTeam(id) {
-            if (confirm('确定删除该组队贴？')) { await dbClient.from('teams').delete().eq('id', id); loadTeams(); }
+            if (confirm('确定删除该组队贴？')) { 
+                await dbClient.from('teams').delete().eq('id', id); 
+                await loadTeams(); 
+            }
         }
 
         function openAdminModal() { document.getElementById('admin-modal').classList.remove('hidden'); }
