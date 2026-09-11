@@ -7,11 +7,10 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        body { background-color: #0f172a; color: #f8fafc; font-family: system-ui, -apple-system, sans-serif; -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none; }
+        body { background-color: #0f172a; color: #f8fafc; font-family: system-ui, -apple-system, sans-serif; }
         .mc-card { background: rgba(30, 41, 59, 0.8); border: 1px solid #334155; border-radius: 12px; }
         .mc-btn { background-color: #10b981; transition: all 0.2s; }
         .mc-btn:hover { background-color: #059669; }
-        input, textarea { -webkit-user-select: text !important; -moz-user-select: text !important; -ms-user-select: text !important; user-select: text !important; }
     </style>
 </head>
 <body class="min-h-screen flex flex-col">
@@ -191,26 +190,23 @@
     </div>
 
     <script>
-        if (window.top !== window.self) window.top.location = window.self.location;
-        document.addEventListener('contextmenu', e => e.preventDefault());
-        document.addEventListener('keydown', e => {
-            if (e.key === 'F12' || (e.ctrlKey && e.shiftKey && ['I','J','C'].includes(e.key.toUpperCase())) || (e.ctrlKey && ['U','S'].includes(e.key.toUpperCase()))) e.preventDefault();
-        });
-        setInterval(() => { (function(){ return false; })["constructor"]("debugger")(); }, 800);
-
         const SUPABASE_URL = "https://tearkjsdbiocboagemzi.supabase.co";
-        const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInRefiI6InRlYXJranNkYmlvY2JvYWdlbXppIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODkwOTE2OTcsImV4cCI6MjEwNDY2NzY5N30.zpMfihJUif20iHpoK__xNHtD8cIihHz_lfxq-Z9bLU0";
+        const SUPABASE_KEY = "sb_publishable_WLrBvOWSwPl1Gx61Pc7dvw_piozm9my";
         const ADMIN_PASSWORD = "707123";
 
         let dbClient = null, isAdmin = false;
         let goodsData = [], ordersData = [], sellData = [], teamsData = [];
 
-        window.addEventListener('DOMContentLoaded', () => {
+        function initSupabase() {
             if (window.supabase) {
                 dbClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
                 loadGoods(); loadOrders(); loadSells(); loadTeams();
+            } else {
+                setTimeout(initSupabase, 200);
             }
-        });
+        }
+
+        window.addEventListener('DOMContentLoaded', initSupabase);
 
         function switchTab(tab) {
             ['goods', 'order', 'sell', 'team'].forEach(t => {
@@ -222,9 +218,14 @@
         }
 
         async function loadGoods() {
+            if (!dbClient) return;
             const { data, error } = await dbClient.from('goods').select('*').order('id', { ascending: false });
-            if (error) console.error("Error loading goods:", error);
-            goodsData = data || []; renderGoods();
+            if (error) {
+                console.error("Error loading goods:", error);
+                return;
+            }
+            goodsData = data || []; 
+            renderGoods();
         }
 
         function renderGoods() {
@@ -274,6 +275,7 @@
         }
 
         async function loadOrders() {
+            if (!dbClient) return;
             const { data } = await dbClient.from('orders').select('*').order('id', { ascending: false });
             ordersData = data || []; renderOrders();
         }
@@ -319,6 +321,7 @@
         async function deleteOrder(id) { if (confirm('确定删除？')) { await dbClient.from('orders').delete().eq('id', id); loadOrders(); } }
 
         async function loadSells() {
+            if (!dbClient) return;
             const { data } = await dbClient.from('sell_ideas').select('*').order('id', { ascending: false });
             sellData = data || []; renderSells();
         }
@@ -361,6 +364,7 @@
         async function deleteSell(id) { if (confirm('确定删除？')) { await dbClient.from('sell_ideas').delete().eq('id', id); loadSells(); } }
 
         async function loadTeams() {
+            if (!dbClient) return;
             const { data } = await dbClient.from('teams').select('*').order('id', { ascending: false });
             teamsData = data || []; renderTeams();
         }
