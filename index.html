@@ -61,9 +61,6 @@
                             <input type="text" id="order-contact" required class="w-full p-2 bg-slate-900 border border-slate-700 rounded focus:border-emerald-500 outline-none">
                         </div>
                         <div>
-                            <p class="text-[11px] text-amber-300/90 leading-tight bg-amber-950/30 p-2 rounded border border-amber-800/40 mb-1.5">
-                                💡 <strong>提示：</strong>可在备注里输入预期价格/交货时间。请注意此价格仅为您的心理期望，最终定价权在于联系您的供应商/店主。
-                            </p>
                             <label class="block text-xs text-slate-400 mb-1">备注信息 (可选)</label>
                             <input type="text" id="order-note" placeholder="例如：预期价格5万/预计晚上上线交割" class="w-full p-2 bg-slate-900 border border-slate-700 rounded focus:border-emerald-500 outline-none">
                         </div>
@@ -71,10 +68,7 @@
                     </form>
                 </div>
                 <div class="md:col-span-2 mc-card p-5 space-y-4">
-                    <div class="flex justify-between items-center border-b border-slate-700 pb-2">
-                        <h2 class="text-lg font-bold text-slate-200">公共采购看板</h2>
-                        <span id="order-notice-tag" class="text-xs text-slate-400">仅显示审核/公示的订单</span>
-                    </div>
+                    <h2 class="text-lg font-bold text-slate-200 border-b border-slate-700 pb-2">公共采购看板</h2>
                     <div id="orders-list" class="space-y-3 max-h-[600px] overflow-y-auto pr-1"></div>
                 </div>
             </div>
@@ -84,9 +78,6 @@
             <div class="grid md:grid-cols-3 gap-6">
                 <div class="mc-card p-5 h-fit space-y-4">
                     <h2 class="text-lg font-bold text-purple-400 border-b border-slate-700 pb-2">提交出售意向</h2>
-                    <p class="text-[11px] text-purple-200/90 leading-tight bg-purple-950/40 p-2.5 rounded border border-purple-800/50">
-                        📌 <strong>注意：</strong>707商店自身无货时，管理才会选择性联系并上架您的物品。
-                    </p>
                     <form id="sell-form" onsubmit="handleCreateSell(event)" class="space-y-3 text-sm">
                         <div>
                             <label class="block text-xs text-slate-400 mb-1">玩家 ID (Game ID)</label>
@@ -94,24 +85,17 @@
                         </div>
                         <div>
                             <label class="block text-xs text-slate-400 mb-1">拟出售物品及数量</label>
-                            <textarea id="sell-items" required placeholder="例如：一桶石英块，一桶合金碎片" class="w-full p-2 bg-slate-900 border border-slate-700 rounded focus:border-purple-500 outline-none h-20"></textarea>
-                        </div>
-                        <div>
-                            <label class="block text-xs text-slate-400 mb-1">期望打包售价 / 心理价位</label>
-                            <input type="text" id="sell-note" placeholder="例如：打包10万或单价可议" class="w-full p-2 bg-slate-900 border border-slate-700 rounded focus:border-purple-500 outline-none">
+                            <textarea id="sell-items" required placeholder="例如：一桶石英块" class="w-full p-2 bg-slate-900 border border-slate-700 rounded focus:border-purple-500 outline-none h-20"></textarea>
                         </div>
                         <div>
                             <label class="block text-xs text-slate-400 mb-1">联系方式 (QQ/微信)</label>
                             <input type="text" id="sell-contact" required class="w-full p-2 bg-slate-900 border border-slate-700 rounded focus:border-purple-500 outline-none">
                         </div>
-                        <button type="submit" class="w-full py-2 bg-purple-600 hover:bg-purple-500 text-white font-bold rounded transition">提交出售意向</button>
+                        <button type="submit" class="w-full py-2 bg-purple-600 hover:bg-purple-500 text-white font-bold rounded">提交出售意向</button>
                     </form>
                 </div>
                 <div class="md:col-span-2 mc-card p-5 space-y-4">
-                    <div class="flex justify-between items-center border-b border-slate-700 pb-2">
-                        <h2 class="text-lg font-bold text-slate-200">公共出售意向看板</h2>
-                        <span class="text-xs text-slate-400">仅显示管理员公示的物品</span>
-                    </div>
+                    <h2 class="text-lg font-bold text-slate-200 border-b border-slate-700 pb-2">公共出售意向看板</h2>
                     <div id="sell-list" class="space-y-3 max-h-[600px] overflow-y-auto pr-1"></div>
                 </div>
             </div>
@@ -124,7 +108,7 @@
                     <form id="team-form" onsubmit="handleCreateTeam(event)" class="space-y-3 text-sm">
                         <div>
                             <label class="block text-xs text-slate-400 mb-1">副本名称</label>
-                            <input type="text" id="team-dungeon" placeholder="例如：末地远征（万象普通）" required class="w-full p-2 bg-slate-900 border border-slate-700 rounded focus:border-sky-500 outline-none">
+                            <input type="text" id="team-dungeon" placeholder="例如：末地远征" required class="w-full p-2 bg-slate-900 border border-slate-700 rounded focus:border-sky-500 outline-none">
                         </div>
                         <div>
                             <label class="block text-xs text-slate-400 mb-1">队长 ID</label>
@@ -136,13 +120,13 @@
                         </div>
                         <div>
                             <label class="block text-xs text-slate-400 mb-1">预计开组/发车时间</label>
-                            <input type="text" id="team-play-time" placeholder="例如：今晚 20:00 / 满人即开" required class="w-full p-2 bg-slate-900 border border-slate-700 rounded focus:border-sky-500 outline-none">
+                            <input type="text" id="team-play-time" placeholder="例如：今晚 20:00" required class="w-full p-2 bg-slate-900 border border-slate-700 rounded focus:border-sky-500 outline-none">
                         </div>
                         <div>
                             <label class="block text-xs text-slate-400 mb-1">队伍需求 / 人数</label>
-                            <input type="text" id="team-need" placeholder="例如：来2个打手，缺奶妈" required class="w-full p-2 bg-slate-900 border border-slate-700 rounded focus:border-sky-500 outline-none">
+                            <input type="text" id="team-need" placeholder="例如：缺2个打手" required class="w-full p-2 bg-slate-900 border border-slate-700 rounded focus:border-sky-500 outline-none">
                         </div>
-                        <button type="submit" class="w-full py-2 bg-sky-600 hover:bg-sky-500 text-white font-bold rounded transition">发布招募</button>
+                        <button type="submit" class="w-full py-2 bg-sky-600 hover:bg-sky-500 text-white font-bold rounded">发布招募</button>
                     </form>
                 </div>
                 <div class="md:col-span-2 space-y-4">
@@ -155,35 +139,43 @@
     </main>
 
     <footer class="mt-8 border-t border-emerald-500/30 bg-slate-900/90 py-6 text-center shadow-lg">
-        <div class="max-w-7xl mx-auto px-4">
-            <h2 class="text-2xl md:text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-teal-200 to-emerald-400 tracking-wide animate-pulse">
-                你有需求，我来满足，加Q群 1082325695
-            </h2>
-        </div>
+        <h2 class="text-2xl md:text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-teal-200 to-emerald-400">
+            你有需求，我来满足，加Q群 1082325695
+        </h2>
     </footer>
 
+    <!-- 管理员 Auth 登录弹窗 -->
     <div id="admin-modal" class="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 z-50 hidden">
         <div class="mc-card max-w-xl w-full p-6 space-y-4 max-h-[90vh] overflow-y-auto">
             <div class="flex justify-between items-center border-b border-slate-700 pb-2">
-                <h3 class="font-bold text-amber-400 text-lg">707 管理控制台</h3>
+                <h3 class="font-bold text-amber-400 text-lg">707 管理员官方登录</h3>
                 <button onclick="closeAdminModal()" class="text-slate-400 hover:text-white">✕</button>
             </div>
+            
             <div id="admin-login-box" class="space-y-3">
-                <p class="text-xs text-slate-400">请输入管理员口令：</p>
-                <input type="password" id="admin-pass-input" placeholder="输入密码" class="w-full p-2 bg-slate-900 border border-slate-700 rounded outline-none">
-                <button onclick="checkAdminPassword()" class="w-full py-2 bg-amber-600 hover:bg-amber-500 font-bold rounded">认证登录</button>
+                <div>
+                    <label class="block text-xs text-slate-400 mb-1">管理员邮箱</label>
+                    <input type="email" id="admin-email-input" placeholder="admin@example.com" class="w-full p-2 bg-slate-900 border border-slate-700 rounded outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs text-slate-400 mb-1">密码</label>
+                    <input type="password" id="admin-pass-input" placeholder="密码" class="w-full p-2 bg-slate-900 border border-slate-700 rounded outline-none">
+                </div>
+                <button onclick="loginAdminAuth()" class="w-full py-2 bg-amber-600 hover:bg-amber-500 font-bold rounded">登录授权</button>
             </div>
+
             <div id="admin-panel" class="space-y-6 hidden text-sm">
+                <div class="flex justify-between items-center bg-slate-800 p-3 rounded">
+                    <span id="admin-user-tips" class="text-emerald-400 font-bold">已通过官方 Auth 登录</span>
+                    <button onclick="logoutAdminAuth()" class="text-xs bg-rose-600 px-2 py-1 rounded">退出登录</button>
+                </div>
                 <div class="bg-slate-900/60 p-4 rounded-lg border border-slate-700 space-y-3">
-                    <h4 class="font-bold text-emerald-400">发布 / 编辑商品</h4>
+                    <h4 class="font-bold text-emerald-400">发布商品</h4>
                     <input type="text" id="add-goods-title" placeholder="商品名称" class="w-full p-2 bg-slate-800 border border-slate-700 rounded">
                     <input type="text" id="add-goods-price" placeholder="报价" class="w-full p-2 bg-slate-800 border border-slate-700 rounded">
-                    <div>
-                        <label class="block text-xs text-slate-400 mb-1">商品图片</label>
-                        <input type="file" id="add-goods-file" accept="image/*" class="w-full p-1 bg-slate-800 border border-slate-700 rounded text-xs text-slate-300">
-                    </div>
-                    <textarea id="add-goods-desc" placeholder="商品详细说明..." class="w-full p-2 bg-slate-800 border border-slate-700 rounded"></textarea>
-                    <button id="save-btn" onclick="handleAddGoods()" class="w-full py-2 bg-emerald-600 hover:bg-emerald-500 font-bold rounded">保存商品</button>
+                    <input type="file" id="add-goods-file" accept="image/*" class="w-full p-1 bg-slate-800 border border-slate-700 rounded text-xs text-slate-300">
+                    <textarea id="add-goods-desc" placeholder="商品说明..." class="w-full p-2 bg-slate-800 border border-slate-700 rounded"></textarea>
+                    <button onclick="handleAddGoods()" class="w-full py-2 bg-emerald-600 hover:bg-emerald-500 font-bold rounded">保存商品</button>
                 </div>
             </div>
         </div>
@@ -192,14 +184,14 @@
     <script>
         const SUPABASE_URL = "https://tearkjsdbiocboagemzi.supabase.co";
         const SUPABASE_KEY = "sb_publishable_WLrBvOWSwPl1Gx61Pc7dvw_piozm9my";
-        const ADMIN_PASSWORD = "707123";
 
-        let dbClient = null, isAdmin = false;
+        let dbClient = null, currentUser = null;
         let goodsData = [], ordersData = [], sellData = [], teamsData = [];
 
         function initSupabase() {
             if (window.supabase) {
                 dbClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+                checkUserStatus();
                 loadGoods(); loadOrders(); loadSells(); loadTeams();
             } else {
                 setTimeout(initSupabase, 200);
@@ -207,6 +199,35 @@
         }
 
         window.addEventListener('DOMContentLoaded', initSupabase);
+
+        async function checkUserStatus() {
+            const { data: { session } } = await dbClient.auth.getSession();
+            currentUser = session?.user || null;
+            if (currentUser) {
+                document.getElementById('admin-login-box')?.classList.add('hidden');
+                document.getElementById('admin-panel')?.classList.remove('hidden');
+            }
+        }
+
+        async function loginAdminAuth() {
+            const email = document.getElementById('admin-email-input').value;
+            const password = document.getElementById('admin-pass-input').value;
+            const { data, error } = await dbClient.auth.signInWithPassword({ email, password });
+            if (error) return alert("登录失败: " + error.message);
+            currentUser = data.user;
+            alert("登录成功！已安全获得管理员权限。");
+            document.getElementById('admin-login-box').classList.add('hidden');
+            document.getElementById('admin-panel').classList.remove('hidden');
+            renderGoods(); renderOrders(); renderSells(); renderTeams();
+        }
+
+        async function logoutAdminAuth() {
+            await dbClient.auth.signOut();
+            currentUser = null;
+            alert("已退出登录");
+            closeAdminModal();
+            location.reload();
+        }
 
         function switchTab(tab) {
             ['goods', 'order', 'sell', 'team'].forEach(t => {
@@ -218,35 +239,25 @@
         }
 
         async function loadGoods() {
-            if (!dbClient) return;
-            const { data, error } = await dbClient.from('goods').select('*').order('id', { ascending: false });
-            if (error) {
-                console.error("Error loading goods:", error);
-                return;
-            }
-            goodsData = data || []; 
-            renderGoods();
+            const { data } = await dbClient.from('goods').select('*').order('id', { ascending: false });
+            goodsData = data || []; renderGoods();
         }
 
         function renderGoods() {
-            const keyword = (document.getElementById('search-input')?.value || '').toLowerCase();
             const container = document.getElementById('goods-list');
-            const list = goodsData.filter(g => g.title.toLowerCase().includes(keyword));
-            if (!list.length) return container.innerHTML = `<p class="col-span-full text-center text-slate-500 py-8">暂无商品</p>`;
-            container.innerHTML = list.map(g => `
+            if (!goodsData.length) return container.innerHTML = `<p class="col-span-full text-center text-slate-500 py-8">暂无商品</p>`;
+            container.innerHTML = goodsData.map(g => `
                 <div class="mc-card overflow-hidden flex flex-col justify-between">
-                    <div>
-                        <div class="h-48 bg-slate-900 flex items-center justify-center p-2">
-                            ${g.image_url ? `<img src="${g.image_url}" class="max-h-full max-w-full object-contain rounded">` : `<span class="text-slate-600">暂无图片</span>`}
-                        </div>
-                        <div class="p-4 space-y-2">
-                            <h3 class="font-bold text-base text-slate-100">${g.title}</h3>
-                            <p class="text-xs text-slate-400 line-clamp-2">${g.description || '暂无描述'}</p>
-                        </div>
+                    <div class="h-48 bg-slate-900 flex items-center justify-center p-2">
+                        ${g.image_url ? `<img src="${g.image_url}" class="max-h-full max-w-full object-contain rounded">` : `<span class="text-slate-600">暂无图片</span>`}
+                    </div>
+                    <div class="p-4 space-y-2">
+                        <h3 class="font-bold text-base text-slate-100">${g.title}</h3>
+                        <p class="text-xs text-slate-400 line-clamp-2">${g.description || '暂无描述'}</p>
                     </div>
                     <div class="p-4 border-t border-slate-700/50 flex justify-between items-center bg-slate-900/30">
                         <span class="text-emerald-400 font-bold text-sm">${g.price}</span>
-                        ${isAdmin ? `<button onclick="deleteGoods(${g.id})" class="text-xs text-rose-400 hover:underline">删除</button>` : ''}
+                        ${currentUser ? `<button onclick="deleteGoods(${g.id})" class="text-xs text-rose-400 hover:underline">删除</button>` : ''}
                     </div>
                 </div>
             `).join('');
@@ -257,7 +268,6 @@
             const price = document.getElementById('add-goods-price').value;
             const fileInput = document.getElementById('add-goods-file');
             const description = document.getElementById('add-goods-desc').value;
-            if (!title || !price) return alert('商品名称和报价必填！');
 
             let image_url = '';
             if (fileInput.files.length > 0) {
@@ -271,115 +281,72 @@
         }
 
         async function deleteGoods(id) {
-            if (confirm('确定删除该商品？')) { await dbClient.from('goods').delete().eq('id', id); loadGoods(); }
+            if (confirm('确定删除？')) { await dbClient.from('goods').delete().eq('id', id); loadGoods(); }
         }
 
         async function loadOrders() {
-            if (!dbClient) return;
             const { data } = await dbClient.from('orders').select('*').order('id', { ascending: false });
             ordersData = data || []; renderOrders();
         }
 
         function renderOrders() {
             const container = document.getElementById('orders-list');
-            const list = isAdmin ? ordersData : ordersData.filter(o => o.is_public);
-            if (!list.length) return container.innerHTML = `<p class="text-slate-500 text-center py-6 text-xs">暂无需求</p>`;
+            const list = currentUser ? ordersData : ordersData.filter(o => o.is_public);
             container.innerHTML = list.map(o => `
-                <div class="bg-slate-900/80 p-3 rounded-lg border ${o.is_public ? 'border-emerald-500/40' : 'border-slate-700'} text-xs space-y-1">
-                    <div class="flex justify-between items-center text-slate-300">
-                        <span class="font-bold text-emerald-400">玩家: ${o.player_id}</span>
-                        <span class="px-2 py-0.5 rounded text-[10px] ${o.status === '已完成' ? 'bg-emerald-900/50 text-emerald-300' : 'bg-amber-900/50 text-amber-300'}">${o.status || '处理中'}</span>
-                    </div>
+                <div class="bg-slate-900/80 p-3 rounded-lg border border-slate-700 text-xs space-y-1">
+                    <div class="flex justify-between text-slate-300"><span class="font-bold text-emerald-400">玩家: ${o.player_id}</span></div>
                     <p class="text-slate-200">采购: ${o.items}</p>
-                    <div class="flex justify-between text-slate-400 text-[11px]">
-                        <span>联系方式: ${o.contact}</span>
-                        <span>${new Date(o.created_at).toLocaleDateString()}</span>
-                    </div>
-                    ${isAdmin ? `
-                        <div class="pt-2 border-t border-slate-800 flex gap-3 justify-end">
-                            <button onclick="togglePublicOrder(${o.id}, ${!o.is_public})" class="text-xs ${o.is_public ? 'text-amber-400' : 'text-sky-400'}">${o.is_public ? '取消公示' : '公示到看板'}</button>
-                            <button onclick="deleteOrder(${o.id})" class="text-xs text-rose-400">删除</button>
-                        </div>
-                    ` : ''}
+                    <p class="text-slate-400">联系方式: ${o.contact}</p>
                 </div>
             `).join('');
         }
 
         async function handleCreateOrder(e) {
             e.preventDefault();
-            const { error } = await dbClient.from('orders').insert([{ 
+            await dbClient.from('orders').insert([{ 
                 player_id: document.getElementById('order-player').value,
                 items: document.getElementById('order-items').value,
                 contact: document.getElementById('order-contact').value,
                 note: document.getElementById('order-note').value,
                 is_public: false, status: '待处理'
             }]);
-
-            if (error) {
-                alert('提交失败: ' + error.message);
-                return;
-            }
             alert('提交成功！'); loadOrders();
             document.getElementById('order-form').reset();
         }
 
-        async function togglePublicOrder(id, is_public) { await dbClient.from('orders').update({ is_public }).eq('id', id); loadOrders(); }
-        async function deleteOrder(id) { if (confirm('确定删除？')) { await dbClient.from('orders').delete().eq('id', id); loadOrders(); } }
-
         async function loadSells() {
-            if (!dbClient) return;
             const { data } = await dbClient.from('sell_ideas').select('*').order('id', { ascending: false });
             sellData = data || []; renderSells();
         }
 
         function renderSells() {
             const container = document.getElementById('sell-list');
-            const list = isAdmin ? sellData : sellData.filter(s => s.is_public);
-            if (!list.length) return container.innerHTML = `<p class="text-slate-500 text-center py-6 text-xs">暂无意向</p>`;
+            const list = currentUser ? sellData : sellData.filter(s => s.is_public);
             container.innerHTML = list.map(s => `
-                <div class="bg-slate-900/80 p-3 rounded-lg border ${s.is_public ? 'border-purple-500/40' : 'border-slate-700'} text-xs space-y-1">
-                    <div class="flex justify-between text-slate-300">
-                        <span class="font-bold text-purple-400">卖家: ${s.player_id}</span>
-                        <span class="text-slate-400">${new Date(s.created_at).toLocaleDateString()}</span>
-                    </div>
+                <div class="bg-slate-900/80 p-3 rounded-lg border border-slate-700 text-xs space-y-1">
+                    <span class="font-bold text-purple-400">卖家: ${s.player_id}</span>
                     <p class="text-slate-200">拟售: ${s.items}</p>
                     <p class="text-slate-400">联系方式: ${s.contact}</p>
-                    ${isAdmin ? `
-                        <div class="pt-2 border-t border-slate-800 flex gap-3 justify-end">
-                            <button onclick="togglePublicSell(${s.id}, ${!s.is_public})" class="text-xs ${s.is_public ? 'text-amber-400' : 'text-purple-400'}">${s.is_public ? '取消公示' : '公示到看板'}</button>
-                            <button onclick="deleteSell(${s.id})" class="text-xs text-rose-400">删除</button>
-                        </div>
-                    ` : ''}
                 </div>
             `).join('');
         }
 
         async function handleCreateSell(e) {
             e.preventDefault();
-            const { error } = await dbClient.from('sell_ideas').insert([{ 
+            await dbClient.from('sell_ideas').insert([{ 
                 player_id: document.getElementById('sell-player').value,
                 items: document.getElementById('sell-items').value,
                 contact: document.getElementById('sell-contact').value,
-                note: document.getElementById('sell-note').value,
                 is_public: false, status: '待联系'
             }]);
-
-            if (error) {
-                alert('提交失败: ' + error.message);
-                return;
-            }
             alert('提交成功！'); loadSells();
             document.getElementById('sell-form').reset();
         }
 
-        async function togglePublicSell(id, is_public) { await dbClient.from('sell_ideas').update({ is_public }).eq('id', id); loadSells(); }
-        async function deleteSell(id) { if (confirm('确定删除？')) { await dbClient.from('sell_ideas').delete().eq('id', id); loadSells(); } }
-
         async function loadTeams() {
-            if (!dbClient) return;
             const { data, error } = await dbClient.from('teams').select('*').order('id', { ascending: false });
             if (error) {
-                console.error("加载组队贴失败:", error);
+                console.error("加载失败:", error);
                 return;
             }
             teamsData = data || []; 
@@ -388,58 +355,21 @@
 
         function renderTeams() {
             const container = document.getElementById('teams-list');
-            if (!container) return;
-            if (!teamsData.length) return container.innerHTML = `<p class="text-slate-500 text-center py-6 text-xs">暂无组队招募帖</p>`;
+            if (!teamsData.length) return container.innerHTML = `<p class="text-slate-500 text-center py-6 text-xs">暂无组队帖</p>`;
 
-            container.innerHTML = teamsData.map(t => {
-                const createTime = new Date(t.created_at || Date.now()).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-                const playTime = t.play_time || '满人即开';
-                const replies = t.replies || [];
-
-                return `
+            container.innerHTML = teamsData.map(t => `
                 <div class="mc-card p-4 space-y-3 text-xs">
-                    <div class="flex justify-between items-start border-b border-slate-700/60 pb-2">
-                        <div>
-                            <span class="text-sky-400 font-bold text-sm">[${t.dungeon_name}]</span>
-                            <span class="text-slate-300 ml-2">队长: <strong class="text-white">${t.leader}</strong></span>
-                        </div>
-                        <div class="text-right text-slate-400 text-[11px]">
-                            <div>发帖时间: <span class="text-slate-300">${createTime}</span></div>
-                            <div>联系QQ: <span class="text-sky-300">${t.qq}</span></div>
-                        </div>
+                    <div class="flex justify-between border-b border-slate-700/60 pb-2">
+                        <span class="text-sky-400 font-bold text-sm">[${t.dungeon_name}]</span>
+                        <span class="text-slate-300">队长: ${t.leader} (QQ: ${t.qq})</span>
                     </div>
-
-                    <div class="grid grid-cols-2 gap-2 bg-slate-900/60 p-2.5 rounded border border-slate-800">
-                        <div>🕒 <strong>预计开组时间：</strong><span class="text-amber-300 font-bold">${playTime}</span></div>
-                        <div>👥 <strong>需求人数：</strong><span class="text-sky-300">${t.need_members}</span></div>
+                    <div class="grid grid-cols-2 gap-2 bg-slate-900/60 p-2 rounded">
+                        <div>🕒 时间：<span class="text-amber-300 font-bold">${t.play_time || '满人即开'}</span></div>
+                        <div>👥 需求：<span class="text-sky-300">${t.need_members}</span></div>
                     </div>
-
-                    <div class="bg-slate-900/50 p-2.5 rounded space-y-1.5 border border-slate-800">
-                        <div class="text-slate-400 text-[11px] font-bold flex justify-between">
-                            <span>已进组 / 报名队员 (${replies.length})</span>
-                            <span class="text-slate-500">点击下方填 ID 申请进组</span>
-                        </div>
-                        ${replies.length === 0 ? `<p class="text-slate-600 text-[11px]">暂无队员进组，快来抢沙发！</p>` : ''}
-                        ${replies.map(r => `
-                            <div class="text-[11px] text-slate-300 border-b border-slate-800/80 pb-1 flex justify-between items-center">
-                                <div>
-                                    <span class="text-emerald-400 font-bold">✔ ${r.player}</span>
-                                    <span class="text-slate-400 ml-1">(${r.msg})</span>
-                                </div>
-                                <span class="text-slate-500 text-[10px]">QQ: ${r.qq}</span>
-                            </div>
-                        `).join('')}
-                    </div>
-
-                    <div class="flex gap-2 pt-1">
-                        <input type="text" id="reply-player-${t.id}" placeholder="我的 Game ID" class="w-28 p-1.5 bg-slate-900 border border-slate-700 rounded text-xs outline-none focus:border-sky-500">
-                        <input type="text" id="reply-msg-${t.id}" placeholder="位置/职业/留言" class="flex-1 p-1.5 bg-slate-900 border border-slate-700 rounded text-xs outline-none focus:border-sky-500">
-                        <input type="text" id="reply-qq-${t.id}" placeholder="我的QQ" class="w-24 p-1.5 bg-slate-900 border border-slate-700 rounded text-xs outline-none focus:border-sky-500">
-                        <button onclick="handleReplyTeam(${t.id})" class="px-3 py-1.5 bg-sky-600 hover:bg-sky-500 text-white rounded font-bold transition">申请进组</button>
-                        ${isAdmin ? `<button onclick="deleteTeam(${t.id})" class="text-rose-400 hover:underline px-1">删除</button>` : ''}
-                    </div>
+                    ${currentUser ? `<button onclick="deleteTeam(${t.id})" class="text-rose-400 text-xs">删除帖子</button>` : ''}
                 </div>
-            `;}).join('');
+            `).join('');
         }
 
         async function handleCreateTeam(e) {
@@ -454,60 +384,23 @@
             }]);
 
             if (error) {
-                console.error("发布招募失败:", error);
                 alert("发布失败: " + error.message);
                 return;
             }
-
             alert('组队招募发布成功！');
             document.getElementById('team-form').reset();
             await loadTeams();
         }
 
-        async function handleReplyTeam(id) {
-            const playerInput = document.getElementById(`reply-player-${id}`);
-            const msgInput = document.getElementById(`reply-msg-${id}`);
-            const qqInput = document.getElementById(`reply-qq-${id}`);
-            if (!playerInput.value || !qqInput.value) return alert('请填入您的 Game ID 和 联系 QQ！');
-
-            const team = teamsData.find(t => t.id === id);
-            const replies = team.replies || [];
-            replies.push({ 
-                player: playerInput.value, 
-                msg: msgInput.value || '申请加入队伍', 
-                qq: qqInput.value 
-            });
-
-            const { error } = await dbClient.from('teams').update({ replies }).eq('id', id);
-            if (error) {
-                alert("申请失败: " + error.message);
-                return;
-            }
-            alert('成功申请进组！');
-            await loadTeams();
-        }
-
         async function deleteTeam(id) {
-            if (confirm('确定删除该组队贴？')) { 
-                await dbClient.from('teams').delete().eq('id', id); 
-                await loadTeams(); 
+            if (confirm('确定删除？')) {
+                await dbClient.from('teams').delete().eq('id', id);
+                loadTeams();
             }
         }
 
         function openAdminModal() { document.getElementById('admin-modal').classList.remove('hidden'); }
         function closeAdminModal() { document.getElementById('admin-modal').classList.add('hidden'); }
-
-        function checkAdminPassword() {
-            const inputPass = document.getElementById('admin-pass-input').value;
-            if (inputPass === ADMIN_PASSWORD) {
-                isAdmin = true;
-                document.getElementById('admin-login-box').classList.add('hidden');
-                document.getElementById('admin-panel').classList.remove('hidden');
-                renderGoods(); renderOrders(); renderSells(); renderTeams();
-            } else { 
-                alert('密码错误！'); 
-            }
-        }
     </script>
 </body>
 </html>
