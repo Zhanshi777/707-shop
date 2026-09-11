@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>707 商店 - SIMMC Minecraft 服务端网页版</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Supabase JS SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        body { background-color: #0f172a; color: #f8fafc; font-family: system-ui, -apple-system, sans-serif; }
+        .mc-card { background: rgba(30, 41, 59, 0.8); border: 1px solid #334155; border-radius: 12px; }
+        .mc-btn { background-color: #10b981; transition: all 0.2s; }
+        .mc-btn:hover { background-color: #059669; }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+    <!-- 顶栏导航 -->
+    <header class="border-b border-slate-700 bg-slate-900/90 backdrop-blur sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <span class="text-2xl font-black text-emerald-400">707 商店</span>
+                <span class="text-xs px-2 py-1 bg-slate-800 border border-slate-700 text-slate-400 rounded">SIMMC 专属</span>
+            </div>
+            <nav class="flex space-x-2 md:space-x-4 text-sm font-medium">
+                <button onclick="switchTab('goods')" id="nav-goods" class="px-3 py-1.5 rounded-lg text-emerald-400 bg-slate-800">商品大厅</button>
+                <button onclick="switchTab('order')" id="nav-order" class="px-3 py-1.5 rounded-lg text-slate-300 hover:text-white">玩家接单</button>
+                <button onclick="switchTab('team')" id="nav-team" class="px-3 py-1.5 rounded-lg text-slate-300 hover:text-white">副本组队</button>
+                <button onclick="openAdminModal()" id="nav-admin" class="px-3 py-1.5 rounded-lg text-amber-400 border border-amber-500/30 hover:bg-amber-500/10">管理后台</button>
+            </nav>
+        </div>
+    </header>
+
+    <main class="flex-1 max-w-7xl w-full mx-auto p-4 md:p-6">
+        
+        <!-- 模块一：商品大厅 -->
+        <section id="tab-goods" class="space-y-6">
+            <div class="flex flex-col md:flex-row justify-between items-center gap-4 bg-slate-800/50 p-4 rounded-xl border border-slate-700">
+                <div>
+                    <h1 class="text-xl font-bold">707 商店在售物品</h1>
+                    <p class="text-xs text-slate-400 mt-1">服务器选购指南 & 报价展示</p>
+                </div>
+                <input type="text" id="search-input" oninput="renderGoods()" placeholder="搜索商品名称..." class="px-4 py-2 bg-slate-900 border border-slate-700 rounded-lg text-sm w-full md:w-64 focus:outline-none focus:border-emerald-500">
+            </div>
+
+            <div id="goods-list" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                <!-- 商品卡片动态加载 -->
+            </div>
+        </section>
+
+        <!-- 模块二：接单页面 -->
+        <section id="tab-order" class="space-y-6 hidden">
+            <div class="grid md:grid-cols-3 gap-6">
+                <!-- 下单表单 -->
+                <div class="mc-card p-5 h-fit space-y-4">
+                    <h2 class="text-lg font-bold text-emerald-400 border-b border-slate-700 pb-2">提交定制需求/采购单</h2>
+                    <form id="order-form" onsubmit="handleCreateOrder(event)" class="space-y-3 text-sm">
+                        <div>
+                            <label class="block text-xs text-slate-400 mb-1">玩家 ID (Game ID)</label>
+                            <input type="text" id="order-player" required class="w-full p-2 bg-slate-900 border border-slate-700 rounded focus:border-emerald-500 outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-xs text-slate-400 mb-1">需求商品及数量</label>
+                            <textarea id="order-items" required placeholder="例如：钻石 x64，下界合金锭 x10" class="w-full p-2 bg-slate-900 border border-slate-700 rounded focus:border-emerald-500 outline-none h-20"></textarea>
+                        </div>
+                        <div>
+                            <label class="block text-xs text-slate-400 mb-1">联系方式 (QQ/微信)</label>
+                            <input type="text" id="order-contact" required class="w-full p-2 bg-slate-900 border border-slate-700 rounded focus:border-emerald-500 outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-xs text-slate-400 mb-1">备注信息 (可选)</label>
+                            <input type="text" id="order-note" placeholder="例如：预计晚上上线交割" class="w-full p-2 bg-slate-900 border border-slate-700 rounded focus:border-emerald-500 outline-none">
+                        </div>
+                        <button type="submit" class="w-full py-2 mc-btn text-white font-bold rounded">确认提交订单</button>
+                    </form>
+                </div>
+
+                <!-- 订单列表 -->
+                <div class="md:col-span-2 mc-card p-5 space-y-4">
+                    <h2 class="text-lg font-bold text-slate-200 border-b border-slate-700 pb-2">公共订单看板</h2>
+                    <div id="orders-list" class="space-y-3 max-h-[600px] overflow-y-auto pr-1">
+                        <!-- 订单记录 -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 模块三：副本组队 -->
+        <section id="tab-team" class="space-y-6 hidden">
+            <div class="grid md:grid-cols-3 gap-6">
+                <!-- 发帖表单 -->
+                <div class="mc-card p-5 h-fit space-y-4">
+                    <h2 class="text-lg font-bold text-sky-400 border-b border-slate-700 pb-2">发起副本组队</h2>
+                    <form id="team-form" onsubmit="handleCreateTeam(event)" class="space-y-3 text-sm">
+                        <div>
+                            <label class="block text-xs text-slate-400 mb-1">副本名称</label>
+                            <input type="text" id="team-dungeon" placeholder="例如：暮色森林 / 终末之地" required class="w-full p-2 bg-slate-900 border border-slate-700 rounded focus:border-sky-500 outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-xs text-slate-400 mb-1">队长 ID</label>
+                            <input type="text" id="team-leader" required class="w-full p-2 bg-slate-900 border border-slate-700 rounded focus:border-sky-500 outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-xs text-slate-400 mb-1">联系 QQ</label>
+                            <input type="text" id="team-qq" required class="w-full p-2 bg-slate-900 border border-slate-700 rounded focus:border-sky-500 outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-xs text-slate-400 mb-1">队伍需求 / 人数</label>
+                            <input type="text" id="team-need" placeholder="例如：来2个打手，缺奶妈" required class="w-full p-2 bg-slate-900 border border-slate-700 rounded focus:border-sky-500 outline-none">
+                        </div>
+                        <button type="submit" class="w-full py-2 bg-sky-600 hover:bg-sky-500 text-white font-bold rounded transition">发布招募</button>
+                    </form>
+                </div>
+
+                <!-- 组队帖子列表 -->
+                <div class="md:col-span-2 space-y-4">
+                    <h2 class="text-lg font-bold text-slate-200">当前组队帖子</h2>
+                    <div id="teams-list" class="space-y-4">
+                        <!-- 组队卡片 -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- 管理员登录/弹窗面板 -->
+    <div id="admin-modal" class="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 z-50 hidden">
+        <div class="mc-card max-w-xl w-full p-6 space-y-4 max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center border-b border-slate-700 pb-2">
+                <h3 class="font-bold text-amber-400 text-lg">707 管理控制台</h3>
+                <button onclick="closeAdminModal()" class="text-slate-400 hover:text-white">✕</button>
+            </div>
+
+            <!-- 未登录状态 -->
+            <div id="admin-login-box" class="space-y-3">
+                <p class="text-xs text-slate-400">请输入管理员口令进入编辑功能：</p>
+                <input type="password" id="admin-pass-input" placeholder="输入密码" class="w-full p-2 bg-slate-900 border border-slate-700 rounded outline-none">
+                <button onclick="checkAdminPassword()" class="w-full py-2 bg-amber-600 hover:bg-amber-500 font-bold rounded">认证登录</button>
+            </div>
+
+            <!-- 已登录状态 -->
+            <div id="admin-panel" class="space-y-6 hidden text-sm">
+                <!-- 添加商品表单 -->
+                <div class="bg-slate-900/60 p-4 rounded-lg border border-slate-700 space-y-3">
+                    <h4 class="font-bold text-emerald-400">发布 / 编辑商品</h4>
+                    <input type="text" id="add-goods-title" placeholder="商品名称" class="w-full p-2 bg-slate-800 border border-slate-700 rounded">
+                    <input type="text" id="add-goods-price" placeholder="报价（例如：10 绿宝石 / 个）" class="w-full p-2 bg-slate-800 border border-slate-700 rounded">
+                    <input type="text" id="add-goods-img" placeholder="图片 URL 链接" class="w-full p-2 bg-slate-800 border border-slate-700 rounded">
+                    <textarea id="add-goods-desc" placeholder="商品详细说明..." class="w-full p-2 bg-slate-800 border border-slate-700 rounded"></textarea>
+                    <button onclick="handleAddGoods()" class="w-full py-2 bg-emerald-600 hover:bg-emerald-500 font-bold rounded">保存商品</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 配置文件初始化与业务逻辑脚本 -->
+    <script>
+        // Supabase 配置
+        const SUPABASE_URL = "https://tearkjsdbiocboagemzi.supabase.co";
+        const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRlYXJranNkYmlvY2JvYWdlbXppIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODkwOTE2OTcsImV4cCI6MjEwNDY2NzY5N30.zpMfihJUif20iHpoK__xNHtD8cIihHz_lfxq-Z9bLU0";
+        const ADMIN_PASSWORD = "707123"; // 你的后台密码，可在此处更改
+
+        const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        let isAdmin = false;
+        let goodsData = [], ordersData = [], teamsData = [];
+
+        // 初始化加载
+        window.onload = () => {
+            loadGoods();
+            loadOrders();
+            loadTeams();
+        };
+
+        // 标签切换
+        function switchTab(tab) {
+            ['goods', 'order', 'team'].forEach(t => {
+                document.getElementById(`tab-${t}`).classList.add('hidden');
+                document.getElementById(`nav-${t}`).className = "px-3 py-1.5 rounded-lg text-slate-300 hover:text-white";
+            });
+            document.getElementById(`tab-${tab}`).classList.remove('hidden');
+            document.getElementById(`nav-${tab}`).className = "px-3 py-1.5 rounded-lg text-emerald-400 bg-slate-800";
+        }
+
+        /* ----- 商品逻辑 ----- */
+        async function loadGoods() {
+            const { data } = await supabase.from('goods').select('*').order('id', { ascending: false });
+            goodsData = data || [];
+            renderGoods();
+        }
+
+        function renderGoods() {
+            const keyword = document.getElementById('search-input').value.toLowerCase();
+            const container = document.getElementById('goods-list');
+            const list = goodsData.filter(g => g.title.toLowerCase().includes(keyword));
+
+            if (list.length === 0) {
+                container.innerHTML = `<p class="col-span-full text-center text-slate-500 py-8">暂无相关商品信息</p>`;
+                return;
+            }
+
+            container.innerHTML = list.map(g => `
+                <div class="mc-card overflow-hidden flex flex-col justify-between group">
+                    <div>
+                        <div class="h-40 bg-slate-900 relative overflow-hidden flex items-center justify-center">
+                            ${g.image_url ? `<img src="${g.image_url}" class="object-cover w-full h-full group-hover:scale-105 transition duration-300" alt="${g.title}">` : `<span class="text-slate-600">暂无图片</span>`}
+                        </div>
+                        <div class="p-4 space-y-2">
+                            <h3 class="font-bold text-base text-slate-100">${g.title}</h3>
+                            <p class="text-xs text-slate-400 line-clamp-2">${g.description || '暂无描述'}</p>
+                        </div>
+                    </div>
+                    <div class="p-4 border-t border-slate-700/50 flex justify-between items-center bg-slate-900/30">
+                        <span class="text-emerald-400 font-bold text-sm">${g.price}</span>
+                        ${isAdmin ? `<button onclick="deleteGoods(${g.id})" class="text-xs text-rose-400 hover:underline">删除</button>` : ''}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        async function handleAddGoods() {
+            const title = document.getElementById('add-goods-title').value;
+            const price = document.getElementById('add-goods-price').value;
+            const image_url = document.getElementById('add-goods-img').value;
+            const description = document.getElementById('add-goods-desc').value;
+
+            if (!title || !price) return alert('商品名称和报价必填！');
+
+            await supabase.from('goods').insert([{ title, price, image_url, description }]);
+            alert('添加成功！');
+            loadGoods();
+            closeAdminModal();
+        }
+
+        async function deleteGoods(id) {
+            if (!confirm('确定删除该商品吗？')) return;
+            await supabase.from('goods').delete().eq('id', id);
+            loadGoods();
+        }
+
+        /* ----- 订单逻辑 ----- */
+        async function loadOrders() {
+            const { data } = await supabase.from('orders').select('*').order('id', { ascending: false });
+            ordersData = data || [];
+            renderOrders();
+        }
+
+        function renderOrders() {
+            const container = document.getElementById('orders-list');
+            if (ordersData.length === 0) {
+                container.innerHTML = `<p class="text-slate-500 text-center py-6 text-xs">暂无订单</p>`;
+                return;
+            }
+
+            container.innerHTML = ordersData.map(o => `
+                <div class="bg-slate-900/80 p-3 rounded-lg border border-slate-700 text-xs space-y-1">
+                    <div class="flex justify-between items-center text-slate-300">
+                        <span class="font-bold text-emerald-400">玩家: ${o.player_id}</span>
+                        <span class="px-2 py-0.5 rounded text-[10px] ${o.status === '已完成' ? 'bg-emerald-900/50 text-emerald-300' : 'bg-amber-900/50 text-amber-300'}">${o.status}</span>
+                    </div>
+                    <p class="text-slate-200">需求: ${o.items}</p>
+                    <div class="flex justify-between text-slate-400 pt-1 text-[11px]">
+                        <span>联系方式: ${o.contact}</span>
+                        <span>${new Date(o.created_at).toLocaleDateString()}</span>
+                    </div>
+                    ${o.note ? `<p class="text-slate-500 text-[10px]">备注: ${o.note}</p>` : ''}
+                    ${isAdmin ? `
+                        <div class="pt-2 border-t border-slate-800 flex gap-2 justify-end">
+                            <button onclick="updateOrderStatus(${o.id}, '已完成')" class="text-emerald-400 hover:underline">标记完成</button>
+                            <button onclick="deleteOrder(${o.id})" class="text-rose-400 hover:underline">删除</button>
+                        </div>
+                    ` : ''}
+                </div>
+            `).join('');
+        }
+
+        async function handleCreateOrder(e) {
+            e.preventDefault();
+            const player_id = document.getElementById('order-player').value;
+            const items = document.getElementById('order-items').value;
+            const contact = document.getElementById('order-contact').value;
+            const note = document.getElementById('order-note').value;
+
+            await supabase.from('orders').insert([{ player_id, items, contact, note }]);
+            alert('订单提交成功！');
+            document.getElementById('order-form').reset();
+            loadOrders();
+        }
+
+        async function updateOrderStatus(id, status) {
+            await supabase.from('orders').update({ status }).eq('id', id);
+            loadOrders();
+        }
+
+        async function deleteOrder(id) {
+            await supabase.from('orders').delete().eq('id', id);
+            loadOrders();
+        }
+
+        /* ----- 副本组队逻辑 ----- */
+        async function loadTeams() {
+            const { data } = await supabase.from('teams').select('*').order('id', { ascending: false });
+            teamsData = data || [];
+            renderTeams();
+        }
+
+        function renderTeams() {
+            const container = document.getElementById('teams-list');
+            if (teamsData.length === 0) {
+                container.innerHTML = `<p class="text-slate-500 text-center py-6 text-xs">暂无组队招募帖</p>`;
+                return;
+            }
+
+            container.innerHTML = teamsData.map(t => `
+                <div class="mc-card p-4 space-y-3 text-xs">
+                    <div class="flex justify-between items-start border-b border-slate-700/60 pb-2">
+                        <div>
+                            <span class="text-sky-400 font-bold text-sm">[${t.dungeon_name}]</span>
+                            <span class="text-slate-300 ml-2">队长: ${t.leader}</span>
+                        </div>
+                        <span class="text-slate-400">联系QQ: ${t.qq}</span>
+                    </div>
+                    <p class="text-slate-200">队伍需求: <span class="text-amber-300">${t.need_members}</span></p>
+
+                    <!-- 跟帖列表 -->
+                    <div class="bg-slate-900/50 p-2 rounded space-y-1">
+                        <p class="text-slate-400 text-[10px]">跟帖队伍 (${t.replies ? t.replies.length : 0})</p>
+                        ${(t.replies || []).map(r => `
+                            <div class="text-[11px] text-slate-300 border-b border-slate-800/50 pb-1">
+                                <span class="text-sky-300">${r.player}:</span> ${r.msg} (QQ: ${r.qq})
+                            </div>
+                        `).join('')}
+                    </div>
+
+                    <!-- 跟帖输入 -->
+                    <div class="flex gap-2 pt-1">
+                        <input type="text" id="reply-msg-${t.id}" placeholder="留言/跟帖需求" class="flex-1 p-1 bg-slate-900 border border-slate-700 rounded text-xs outline-none">
+                        <input type="text" id="reply-qq-${t.id}" placeholder="我的QQ" class="w-24 p-1 bg-slate-900 border border-slate-700 rounded text-xs outline-none">
+                        <button onclick="handleReplyTeam(${t.id})" class="px-3 py-1 bg-sky-600 hover:bg-sky-500 text-white rounded font-bold">跟帖</button>
+                        ${isAdmin ? `<button onclick="deleteTeam(${t.id})" class="text-rose-400 hover:underline">删除</button>` : ''}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        async function handleCreateTeam(e) {
+            e.preventDefault();
+            const dungeon_name = document.getElementById('team-dungeon').value;
+            const leader = document.getElementById('team-leader').value;
+            const qq = document.getElementById('team-qq').value;
+            const need_members = document.getElementById('team-need').value;
+
+            await supabase.from('teams').insert([{ dungeon_name, leader, qq, need_members, replies: [] }]);
+            alert('组队发布成功！');
+            document.getElementById('team-form').reset();
+            loadTeams();
+        }
+
+        async function handleReplyTeam(id) {
+            const msgInput = document.getElementById(`reply-msg-${id}`);
+            const qqInput = document.getElementById(`reply-qq-${id}`);
+            if (!msgInput.value || !qqInput.value) return alert('请填完跟帖内容和QQ！');
+
+            const team = teamsData.find(t => t.id === id);
+            const replies = team.replies || [];
+            replies.push({ player: '玩家', msg: msgInput.value, qq: qqInput.value });
+
+            await supabase.from('teams').update({ replies }).eq('id', id);
+            loadTeams();
+        }
+
+        async function deleteTeam(id) {
+            if (!confirm('确定删除该组队贴？')) return;
+            await supabase.from('teams').delete().eq('id', id);
+            loadTeams();
+        }
+
+        /* ----- 管理后台逻辑 ----- */
+        function openAdminModal() {
+            document.getElementById('admin-modal').classList.remove('hidden');
+        }
+
+        function closeAdminModal() {
+            document.getElementById('admin-modal').classList.add('hidden');
+        }
+
+        function checkAdminPassword() {
+            const pass = document.getElementById('admin-pass-input').value;
+            if (pass === ADMIN_PASSWORD) {
+                isAdmin = true;
+                document.getElementById('admin-login-box').classList.add('hidden');
+                document.getElementById('admin-panel').classList.remove('hidden');
+                renderGoods();
+                renderOrders();
+                renderTeams();
+            } else {
+                alert('密码错误！');
+            }
+        }
+    </script>
+</body>
+</html>
