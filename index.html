@@ -200,7 +200,7 @@
 
         const SUPABASE_URL = "https://tearkjsdbiocboagemzi.supabase.co";
         const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInRefiI6InRlYXJranNkYmlvY2JvYWdlbXppIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODkwOTE2OTcsImV4cCI6MjEwNDY2NzY5N30.zpMfihJUif20iHpoK__xNHtD8cIihHz_lfxq-Z9bLU0";
-        const ADMIN_HASH = "d62688b50d603a152345e54ebae95b77c5d9e5db422d3581729420b78c96ec1d";
+        const ADMIN_PASSWORD = "707123";
 
         let dbClient = null, isAdmin = false;
         let goodsData = [], ordersData = [], sellData = [], teamsData = [];
@@ -222,7 +222,8 @@
         }
 
         async function loadGoods() {
-            const { data } = await dbClient.from('goods').select('*').order('id', { ascending: false });
+            const { data, error } = await dbClient.from('goods').select('*').order('id', { ascending: false });
+            if (error) console.error("Error loading goods:", error);
             goodsData = data || []; renderGoods();
         }
 
@@ -461,18 +462,9 @@
         function openAdminModal() { document.getElementById('admin-modal').classList.remove('hidden'); }
         function closeAdminModal() { document.getElementById('admin-modal').classList.add('hidden'); }
 
-        async function hashPassword(str) {
-            const encoder = new TextEncoder();
-            const data = encoder.encode(str);
-            const hashBuffer = await crypto.subtle.digest('SHA-256', data);
-            const hashArray = Array.from(new Uint8Array(hashBuffer));
-            return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-        }
-
-        async function checkAdminPassword() {
+        function checkAdminPassword() {
             const inputPass = document.getElementById('admin-pass-input').value;
-            const hashedInput = await hashPassword(inputPass);
-            if (hashedInput === ADMIN_HASH) {
+            if (inputPass === ADMIN_PASSWORD) {
                 isAdmin = true;
                 document.getElementById('admin-login-box').classList.add('hidden');
                 document.getElementById('admin-panel').classList.remove('hidden');
