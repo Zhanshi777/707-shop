@@ -189,13 +189,11 @@
         const SUPABASE_URL = "https://tearkjsdbiocboagemzi.supabase.co";
         const SUPABASE_KEY = "sb_publishable_WLrBvOWSwPl1Gx61Pc7dvw_piozm9my";
         
-        // 绑定官方唯一管理员邮箱
         const ADMIN_EMAIL = "934750742@qq.com";
 
         let dbClient = null, currentUser = null;
         let goodsData = [], ordersData = [], sellData = [], teamsData = [];
 
-        // 简易防 XSS 注入过滤
         function escapeHtml(str) {
             if (!str) return '';
             return String(str)
@@ -222,7 +220,6 @@
             const { data: { session } } = await dbClient.auth.getSession();
             const user = session?.user || null;
             
-            // 安全校验：登录用户的邮箱必须严格等于官方管理员邮箱
             if (user && user.email === ADMIN_EMAIL) {
                 currentUser = user;
                 document.getElementById('admin-login-box')?.classList.add('hidden');
@@ -232,7 +229,7 @@
                 document.getElementById('admin-login-box')?.classList.remove('hidden');
                 document.getElementById('admin-panel')?.classList.add('hidden');
             }
-            renderGoods(); renderTeams();
+            renderGoods(); renderOrders(); renderSells(); renderTeams();
         }
 
         async function loginAdminAuth() {
@@ -318,6 +315,7 @@
             if (confirm('确定删除商品？')) { await dbClient.from('goods').delete().eq('id', id); loadGoods(); }
         }
 
+        // --- 采购看板（含管理员放单/删除） ---
         async function loadOrders() {
             const { data } = await dbClient.from('orders').select('*').order('id', { ascending: false });
             ordersData = data || []; renderOrders();
@@ -326,13 +324,44 @@
         function renderOrders() {
             const container = document.getElementById('orders-list');
             const list = currentUser ? ordersData : ordersData.filter(o => o.is_public);
+
+            if (!list.length) return container.innerHTML = `<p class="text-slate-500 text-center py-6 text-xs">暂无采购需求数据</p>`;
+
             container.innerHTML = list.map(o => `
-                <div class="bg-slate-900/80 p-3 rounded-lg border border-slate-700 text-xs space-y-1">
-                    <div class="flex justify-between text-slate-300"><span class="font-bold text-emerald-400">玩家: ${escapeHtml(o.player_id)}</span></div>
+                <div class="bg-slate-900/80 p-3 rounded-lg border border-slate-700 text-xs space-y-2">
+                    <div class="flex justify-between items-center">
+                        <span class="font-bold text-emerald-400">玩家: ${escapeHtml(o.player_id)}</span>
+                        ${currentUser ? `<span class="px-2 py-0.5 rounded text-[10px] ${o.is_public ? 'bg-emerald-500/20 text-emerald-400' : 'bg-amber-500/20 text-amber-400'}">${o.is_public ? '已放单公示' : '待放单'}</span>` : ''}
+                    </div>
                     <p class="text-slate-200">采购: ${escapeHtml(o.items)}</p>
                     <p class="text-slate-400">联系 QQ: ${escapeHtml(o.contact)}</p>
+                    ${o.note ? `<p class="text-slate-400">备注: ${escapeHtml(o.note)}</p>` : ''}
+                    
+                    ${currentUser ? `
+                        <div class="pt-2 border-t border-slate-800 flex justify-end gap-3 text-xs">
+                            <button onclick="toggleOrderPublic(${o.id}, ${!o.is_public})" class="text-sky-400 hover:underline">
+                                ${o.is_public ? '取消公示' : '放单公示'}
+                            </button>
+                            <button onclick="deleteOrder(${o.id})" class="text-rose-400 hover:underline">删除条目</button>
+                        </div>
+                    ` : ''}
                 </div>
             `).join('');
+        }
+
+        async function toggleOrderPublic(id, newStatus) {
+            if (!currentUser) return alert("只有管理员可以操作放单公示！");
+            const { error } = await dbClient.from('orders').update({ is_public: newStatus }).eq('id', id);
+            if (error) alert("操作失败: " + error.message);
+            else loadOrders();
+        }
+
+        async function deleteOrder(id) {
+            if (!currentUser) return alert("只有管理员可以删除！");
+            if (confirm('确定删除此采购订单？')) {
+                await dbClient.from('orders').delete().eq('id', id);
+                loadOrders();
+            }
         }
 
         async function handleCreateOrder(e) {
@@ -344,10 +373,11 @@
                 note: document.getElementById('order-note').value,
                 is_public: false, status: '待处理'
             }]);
-            alert('提交成功！'); loadOrders();
+            alert('提交成功！等待管理员放单公示。'); loadOrders();
             document.getElementById('order-form').reset();
         }
 
+        // --- 出售意向（含管理员放单/删除） ---
         async function loadSells() {
             const { data } = await dbClient.from('sell_ideas').select('*').order('id', { ascending: false });
             sellData = data || []; renderSells();
@@ -356,13 +386,43 @@
         function renderSells() {
             const container = document.getElementById('sell-list');
             const list = currentUser ? sellData : sellData.filter(s => s.is_public);
+
+            if (!list.length) return container.innerHTML = `<p class="text-slate-500 text-center py-6 text-xs">暂无出售意向数据</p>`;
+
             container.innerHTML = list.map(s => `
-                <div class="bg-slate-900/80 p-3 rounded-lg border border-slate-700 text-xs space-y-1">
-                    <span class="font-bold text-purple-400">卖家: ${escapeHtml(s.player_id)}</span>
+                <div class="bg-slate-900/80 p-3 rounded-lg border border-slate-700 text-xs space-y-2">
+                    <div class="flex justify-between items-center">
+                        <span class="font-bold text-purple-400">卖家: ${escapeHtml(s.player_id)}</span>
+                        ${currentUser ? `<span class="px-2 py-0.5 rounded text-[10px] ${s.is_public ? 'bg-purple-500/20 text-purple-400' : 'bg-amber-500/20 text-amber-400'}">${s.is_public ? '已放单公示' : '待放单'}</span>` : ''}
+                    </div>
                     <p class="text-slate-200">拟售: ${escapeHtml(s.items)}</p>
                     <p class="text-slate-400">联系 QQ: ${escapeHtml(s.contact)}</p>
+                    
+                    ${currentUser ? `
+                        <div class="pt-2 border-t border-slate-800 flex justify-end gap-3 text-xs">
+                            <button onclick="toggleSellPublic(${s.id}, ${!s.is_public})" class="text-sky-400 hover:underline">
+                                ${s.is_public ? '取消公示' : '放单公示'}
+                            </button>
+                            <button onclick="deleteSell(${s.id})" class="text-rose-400 hover:underline">删除条目</button>
+                        </div>
+                    ` : ''}
                 </div>
             `).join('');
+        }
+
+        async function toggleSellPublic(id, newStatus) {
+            if (!currentUser) return alert("只有管理员可以操作放单公示！");
+            const { error } = await dbClient.from('sell_ideas').update({ is_public: newStatus }).eq('id', id);
+            if (error) alert("操作失败: " + error.message);
+            else loadSells();
+        }
+
+        async function deleteSell(id) {
+            if (!currentUser) return alert("只有管理员可以删除！");
+            if (confirm('确定删除此出售意向？')) {
+                await dbClient.from('sell_ideas').delete().eq('id', id);
+                loadSells();
+            }
         }
 
         async function handleCreateSell(e) {
@@ -373,10 +433,11 @@
                 contact: document.getElementById('sell-contact').value,
                 is_public: false, status: '待联系'
             }]);
-            alert('提交成功！'); loadSells();
+            alert('提交成功！等待管理员放单公示。'); loadSells();
             document.getElementById('sell-form').reset();
         }
 
+        // --- 副本组队逻辑 ---
         async function loadTeams() {
             const { data, error } = await dbClient.from('teams').select('*').order('id', { ascending: false });
             if (error) return console.error("加载失败:", error);
@@ -402,7 +463,6 @@
                         <div>👥 需求：<span class="text-sky-300">${escapeHtml(t.need_members)}</span></div>
                     </div>
 
-                    <!-- 已申请/留言玩家列表 -->
                     ${replies.length > 0 ? `
                         <div class="bg-slate-900/40 p-2.5 rounded border border-slate-800 space-y-2">
                             <div class="text-slate-400 font-bold text-[11px]">📋 已响应的队员 (${replies.length})：</div>
@@ -420,7 +480,6 @@
                         </div>
                     ` : `<div class="text-slate-500 text-[11px]">暂无队员申请，快来抢沙发！</div>`}
 
-                    <!-- 普通玩家：申请加入输入框 -->
                     <div class="pt-2 border-t border-slate-800 flex flex-col md:flex-row gap-2">
                         <input type="text" id="join-player-${t.id}" placeholder="你的游戏ID" class="p-1.5 bg-slate-900 border border-slate-700 rounded text-xs focus:border-sky-500 outline-none w-full md:w-1/3">
                         <input type="text" id="join-contact-${t.id}" placeholder="你的联系 QQ" class="p-1.5 bg-slate-900 border border-slate-700 rounded text-xs focus:border-sky-500 outline-none w-full md:w-1/2">
