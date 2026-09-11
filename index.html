@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>707 商店 - SIMMC Minecraft 服务端网页版</title>
+    <title>707商店——励志成为SIMMC服务最好的商店</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Supabase JS SDK -->
@@ -21,14 +21,14 @@
     <header class="border-b border-slate-700 bg-slate-900/90 backdrop-blur sticky top-0 z-50">
         <div class="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
             <div class="flex items-center space-x-3">
-                <span class="text-2xl font-black text-emerald-400">707 商店</span>
-                <span class="text-xs px-2 py-1 bg-slate-800 border border-slate-700 text-slate-400 rounded">SIMMC 专属</span>
+                <span class="text-lg md:text-2xl font-black text-emerald-400">707商店——励志成为SIMMC服务最好的商店</span>
             </div>
-            <nav class="flex space-x-2 md:space-x-4 text-sm font-medium">
-                <button onclick="switchTab('goods')" id="nav-goods" class="px-3 py-1.5 rounded-lg text-emerald-400 bg-slate-800">商品大厅</button>
-                <button onclick="switchTab('order')" id="nav-order" class="px-3 py-1.5 rounded-lg text-slate-300 hover:text-white">玩家接单</button>
-                <button onclick="switchTab('team')" id="nav-team" class="px-3 py-1.5 rounded-lg text-slate-300 hover:text-white">副本组队</button>
-                <button onclick="openAdminModal()" id="nav-admin" class="px-3 py-1.5 rounded-lg text-amber-400 border border-amber-500/30 hover:bg-amber-500/10">管理后台</button>
+            <nav class="flex space-x-1 md:space-x-3 text-xs md:text-sm font-medium">
+                <button onclick="switchTab('goods')" id="nav-goods" class="px-2.5 py-1.5 rounded-lg text-emerald-400 bg-slate-800">商品大厅</button>
+                <button onclick="switchTab('order')" id="nav-order" class="px-2.5 py-1.5 rounded-lg text-slate-300 hover:text-white">我有采购需求</button>
+                <button onclick="switchTab('sell')" id="nav-sell" class="px-2.5 py-1.5 rounded-lg text-slate-300 hover:text-white">我有出售想法</button>
+                <button onclick="switchTab('team')" id="nav-team" class="px-2.5 py-1.5 rounded-lg text-slate-300 hover:text-white">副本组队</button>
+                <button onclick="openAdminModal()" id="nav-admin" class="px-2.5 py-1.5 rounded-lg text-amber-400 border border-amber-500/30 hover:bg-amber-500/10">管理后台</button>
             </nav>
         </div>
     </header>
@@ -50,12 +50,12 @@
             </div>
         </section>
 
-        <!-- 模块二：接单页面 -->
+        <!-- 模块二：我有采购需求 -->
         <section id="tab-order" class="space-y-6 hidden">
             <div class="grid md:grid-cols-3 gap-6">
                 <!-- 下单表单 -->
                 <div class="mc-card p-5 h-fit space-y-4">
-                    <h2 class="text-lg font-bold text-emerald-400 border-b border-slate-700 pb-2">提交定制需求/采购单</h2>
+                    <h2 class="text-lg font-bold text-emerald-400 border-b border-slate-700 pb-2">提交采购需求</h2>
                     <form id="order-form" onsubmit="handleCreateOrder(event)" class="space-y-3 text-sm">
                         <div>
                             <label class="block text-xs text-slate-400 mb-1">玩家 ID (Game ID)</label>
@@ -70,17 +70,20 @@
                             <input type="text" id="order-contact" required class="w-full p-2 bg-slate-900 border border-slate-700 rounded focus:border-emerald-500 outline-none">
                         </div>
                         <div>
+                            <p class="text-[11px] text-amber-300/90 leading-tight bg-amber-950/30 p-2 rounded border border-amber-800/40 mb-1.5">
+                                💡 <strong>提示：</strong>可在备注里输入预期价格/交货时间。请注意此价格仅为您的心理期望，最终定价权在于联系您的供应商/店主。
+                            </p>
                             <label class="block text-xs text-slate-400 mb-1">备注信息 (可选)</label>
-                            <input type="text" id="order-note" placeholder="例如：预计晚上上线交割" class="w-full p-2 bg-slate-900 border border-slate-700 rounded focus:border-emerald-500 outline-none">
+                            <input type="text" id="order-note" placeholder="例如：预期价格5万/预计晚上上线交割" class="w-full p-2 bg-slate-900 border border-slate-700 rounded focus:border-emerald-500 outline-none">
                         </div>
-                        <button type="submit" class="w-full py-2 mc-btn text-white font-bold rounded">确认提交订单</button>
+                        <button type="submit" class="w-full py-2 mc-btn text-white font-bold rounded">确认提交采购需求</button>
                     </form>
                 </div>
 
-                <!-- 订单列表 -->
+                <!-- 采购需求看板 -->
                 <div class="md:col-span-2 mc-card p-5 space-y-4">
                     <div class="flex justify-between items-center border-b border-slate-700 pb-2">
-                        <h2 class="text-lg font-bold text-slate-200">公共订单看板</h2>
+                        <h2 class="text-lg font-bold text-slate-200">公共采购看板</h2>
                         <span id="order-notice-tag" class="text-xs text-slate-400">仅显示审核/公示的订单</span>
                     </div>
                     <div id="orders-list" class="space-y-3 max-h-[600px] overflow-y-auto pr-1">
@@ -90,7 +93,52 @@
             </div>
         </section>
 
-        <!-- 模块三：副本组队 -->
+        <!-- 模块三：我有出售想法 -->
+        <section id="tab-sell" class="space-y-6 hidden">
+            <div class="grid md:grid-cols-3 gap-6">
+                <!-- 提交出售想法表单 -->
+                <div class="mc-card p-5 h-fit space-y-4">
+                    <h2 class="text-lg font-bold text-purple-400 border-b border-slate-700 pb-2">提交出售意向</h2>
+                    
+                    <p class="text-[11px] text-purple-200/90 leading-tight bg-purple-950/40 p-2.5 rounded border border-purple-800/50">
+                        📌 <strong>注意：</strong>707商店自身无货时，管理才会选择性联系并上架您的物品。
+                    </p>
+
+                    <form id="sell-form" onsubmit="handleCreateSell(event)" class="space-y-3 text-sm">
+                        <div>
+                            <label class="block text-xs text-slate-400 mb-1">玩家 ID (Game ID)</label>
+                            <input type="text" id="sell-player" required class="w-full p-2 bg-slate-900 border border-slate-700 rounded focus:border-purple-500 outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-xs text-slate-400 mb-1">拟出售物品及数量</label>
+                            <textarea id="sell-items" required placeholder="例如：附魔金苹果 x32，潜影盒 x5" class="w-full p-2 bg-slate-900 border border-slate-700 rounded focus:border-purple-500 outline-none h-20"></textarea>
+                        </div>
+                        <div>
+                            <label class="block text-xs text-slate-400 mb-1">期望打包售价 / 心理价位</label>
+                            <input type="text" id="sell-note" placeholder="例如：打包10万或单价可议" class="w-full p-2 bg-slate-900 border border-slate-700 rounded focus:border-purple-500 outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-xs text-slate-400 mb-1">联系方式 (QQ/微信)</label>
+                            <input type="text" id="sell-contact" required class="w-full p-2 bg-slate-900 border border-slate-700 rounded focus:border-purple-500 outline-none">
+                        </div>
+                        <button type="submit" class="w-full py-2 bg-purple-600 hover:bg-purple-500 text-white font-bold rounded transition">提交出售意向</button>
+                    </form>
+                </div>
+
+                <!-- 出售想法看板 -->
+                <div class="md:col-span-2 mc-card p-5 space-y-4">
+                    <div class="flex justify-between items-center border-b border-slate-700 pb-2">
+                        <h2 class="text-lg font-bold text-slate-200">公共出售意向看板</h2>
+                        <span class="text-xs text-slate-400">仅显示管理员公示的物品</span>
+                    </div>
+                    <div id="sell-list" class="space-y-3 max-h-[600px] overflow-y-auto pr-1">
+                        <!-- 出售想法列表 -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 模块四：副本组队 -->
         <section id="tab-team" class="space-y-6 hidden">
             <div class="grid md:grid-cols-3 gap-6">
                 <!-- 发帖表单 -->
@@ -128,6 +176,15 @@
         </section>
 
     </main>
+
+    <!-- 底部超大字体广告横幅 -->
+    <footer class="mt-8 border-t border-emerald-500/30 bg-slate-900/90 py-6 text-center shadow-lg">
+        <div class="max-w-7xl mx-auto px-4">
+            <h2 class="text-2xl md:text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-teal-200 to-emerald-400 tracking-wide animate-pulse">
+                你有需求，我来满足，加Q群 1082325695
+            </h2>
+        </div>
+    </footer>
 
     <!-- 管理员登录/弹窗面板 -->
     <div id="admin-modal" class="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 z-50 hidden">
@@ -172,7 +229,7 @@
 
         let dbClient = null;
         let isAdmin = false;
-        let goodsData = [], ordersData = [], teamsData = [];
+        let goodsData = [], ordersData = [], sellData = [], teamsData = [];
 
         // 初始化
         window.addEventListener('DOMContentLoaded', () => {
@@ -180,6 +237,7 @@
                 dbClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
                 loadGoods();
                 loadOrders();
+                loadSells();
                 loadTeams();
             } else {
                 console.error("Supabase SDK 没能正常加载");
@@ -188,17 +246,17 @@
 
         // 切换导航标签
         function switchTab(tab) {
-            ['goods', 'order', 'team'].forEach(t => {
+            ['goods', 'order', 'sell', 'team'].forEach(t => {
                 const el = document.getElementById(`tab-${t}`);
                 const nav = document.getElementById(`nav-${t}`);
                 if (el) el.classList.add('hidden');
-                if (nav) nav.className = "px-3 py-1.5 rounded-lg text-slate-300 hover:text-white";
+                if (nav) nav.className = "px-2.5 py-1.5 rounded-lg text-slate-300 hover:text-white";
             });
             
             const targetEl = document.getElementById(`tab-${tab}`);
             const targetNav = document.getElementById(`nav-${tab}`);
             if (targetEl) targetEl.classList.remove('hidden');
-            if (targetNav) targetNav.className = "px-3 py-1.5 rounded-lg text-emerald-400 bg-slate-800";
+            if (targetNav) targetNav.className = "px-2.5 py-1.5 rounded-lg text-emerald-400 bg-slate-800";
         }
 
         /* ----- 商品逻辑 ----- */
@@ -294,7 +352,7 @@
             loadGoods();
         }
 
-        /* ----- 订单逻辑 ----- */
+        /* ----- 采购需求逻辑 ----- */
         async function loadOrders() {
             if (!dbClient) return;
             const { data } = await dbClient.from('orders').select('*').order('id', { ascending: false });
@@ -306,11 +364,10 @@
             const container = document.getElementById('orders-list');
             if (!container) return;
 
-            // 管理员看全部，非管理员只看公示 (is_public === true) 的订单
             const displayOrders = isAdmin ? ordersData : ordersData.filter(o => o.is_public === true);
 
             if (displayOrders.length === 0) {
-                container.innerHTML = `<p class="text-slate-500 text-center py-6 text-xs">${isAdmin ? '暂无订单' : '暂无公共展示的订单需求'}</p>`;
+                container.innerHTML = `<p class="text-slate-500 text-center py-6 text-xs">${isAdmin ? '暂无采购需求' : '暂无公共展示的采购需求'}</p>`;
                 return;
             }
 
@@ -323,12 +380,12 @@
                         </div>
                         <span class="px-2 py-0.5 rounded text-[10px] ${o.status === '已完成' ? 'bg-emerald-900/50 text-emerald-300' : 'bg-amber-900/50 text-amber-300'}">${o.status || '处理中'}</span>
                     </div>
-                    <p class="text-slate-200">需求: ${o.items}</p>
+                    <p class="text-slate-200">采购需求: ${o.items}</p>
                     <div class="flex justify-between text-slate-400 pt-1 text-[11px]">
                         <span>联系方式: ${o.contact}</span>
                         <span>${new Date(o.created_at).toLocaleDateString()}</span>
                     </div>
-                    ${o.note ? `<p class="text-slate-500 text-[10px]">备注: ${o.note}</p>` : ''}
+                    ${o.note ? `<p class="text-slate-500 text-[10px]">备注/期望价: ${o.note}</p>` : ''}
                     
                     ${isAdmin ? `
                         <div class="pt-2 border-t border-slate-800/80 flex gap-3 justify-end items-center">
@@ -352,14 +409,12 @@
             const contact = document.getElementById('order-contact').value;
             const note = document.getElementById('order-note').value;
 
-            // 默认 is_public 为 false（私密）
             await dbClient.from('orders').insert([{ player_id, items, contact, note, is_public: false, status: '待处理' }]);
-            alert('订单提交成功！已私信提交给店主。');
+            alert('采购需求提交成功！已私密发送给店主。');
             document.getElementById('order-form').reset();
             loadOrders();
         }
 
-        // 管理员切换公示状态
         async function togglePublicOrder(id, is_public) {
             await dbClient.from('orders').update({ is_public }).eq('id', id);
             loadOrders();
@@ -371,9 +426,88 @@
         }
 
         async function deleteOrder(id) {
-            if (!confirm('确定删除该订单吗？')) return;
+            if (!confirm('确定删除该采购需求吗？')) return;
             await dbClient.from('orders').delete().eq('id', id);
             loadOrders();
+        }
+
+        /* ----- 出售想法逻辑 ----- */
+        async function loadSells() {
+            if (!dbClient) return;
+            const { data } = await dbClient.from('sell_ideas').select('*').order('id', { ascending: false });
+            sellData = data || [];
+            renderSells();
+        }
+
+        function renderSells() {
+            const container = document.getElementById('sell-list');
+            if (!container) return;
+
+            const displaySells = isAdmin ? sellData : sellData.filter(s => s.is_public === true);
+
+            if (displaySells.length === 0) {
+                container.innerHTML = `<p class="text-slate-500 text-center py-6 text-xs">${isAdmin ? '暂无出售想法' : '暂无公共展示的出售意向'}</p>`;
+                return;
+            }
+
+            container.innerHTML = displaySells.map(s => `
+                <div class="bg-slate-900/80 p-3 rounded-lg border ${s.is_public ? 'border-purple-500/40' : 'border-slate-700'} text-xs space-y-1">
+                    <div class="flex justify-between items-center text-slate-300">
+                        <div class="flex items-center space-x-2">
+                            <span class="font-bold text-purple-400">卖家: ${s.player_id}</span>
+                            ${isAdmin ? `<span class="px-1.5 py-0.5 text-[10px] rounded ${s.is_public ? 'bg-purple-900/60 text-purple-300' : 'bg-slate-800 text-slate-400'}">${s.is_public ? '已公示' : '仅店主可见'}</span>` : ''}
+                        </div>
+                        <span class="px-2 py-0.5 rounded text-[10px] ${s.status === '已联系' ? 'bg-emerald-900/50 text-emerald-300' : 'bg-amber-900/50 text-amber-300'}">${s.status || '待联系'}</span>
+                    </div>
+                    <p class="text-slate-200">拟售物品: ${s.items}</p>
+                    <div class="flex justify-between text-slate-400 pt-1 text-[11px]">
+                        <span>联系方式: ${s.contact}</span>
+                        <span>${new Date(s.created_at).toLocaleDateString()}</span>
+                    </div>
+                    ${s.note ? `<p class="text-slate-400 text-[10px]">期望售价: ${s.note}</p>` : ''}
+                    
+                    ${isAdmin ? `
+                        <div class="pt-2 border-t border-slate-800/80 flex gap-3 justify-end items-center">
+                            <button onclick="togglePublicSell(${s.id}, ${!s.is_public})" class="text-xs ${s.is_public ? 'text-amber-400' : 'text-purple-400'} hover:underline font-bold">
+                                ${s.is_public ? '取消公示' : '公示到看板'}
+                            </button>
+                            <button onclick="updateSellStatus(${s.id}, '${s.status === '已联系' ? '待联系' : '已联系'}')" class="text-xs text-emerald-400 hover:underline">
+                                ${s.status === '已联系' ? '设为待联系' : '标记已联系'}
+                            </button>
+                            <button onclick="deleteSell(${s.id})" class="text-xs text-rose-400 hover:underline">删除</button>
+                        </div>
+                    ` : ''}
+                </div>
+            `).join('');
+        }
+
+        async function handleCreateSell(e) {
+            e.preventDefault();
+            const player_id = document.getElementById('sell-player').value;
+            const items = document.getElementById('sell-items').value;
+            const contact = document.getElementById('sell-contact').value;
+            const note = document.getElementById('sell-note').value;
+
+            await dbClient.from('sell_ideas').insert([{ player_id, items, contact, note, is_public: false, status: '待联系' }]);
+            alert('出售意向提交成功！707商店缺货时管理将优先联系您。');
+            document.getElementById('sell-form').reset();
+            loadSells();
+        }
+
+        async function togglePublicSell(id, is_public) {
+            await dbClient.from('sell_ideas').update({ is_public }).eq('id', id);
+            loadSells();
+        }
+
+        async function updateSellStatus(id, status) {
+            await dbClient.from('sell_ideas').update({ status }).eq('id', id);
+            loadSells();
+        }
+
+        async function deleteSell(id) {
+            if (!confirm('确定删除该出售想法吗？')) return;
+            await dbClient.from('sell_ideas').delete().eq('id', id);
+            loadSells();
         }
 
         /* ----- 副本组队逻辑 ----- */
@@ -471,6 +605,7 @@
                 document.getElementById('admin-panel').classList.remove('hidden');
                 renderGoods();
                 renderOrders();
+                renderSells();
                 renderTeams();
             } else {
                 alert('密码错误！');
