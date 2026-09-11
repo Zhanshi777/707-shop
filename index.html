@@ -68,6 +68,12 @@
                         </div>
                         <button type="submit" class="w-full py-2 mc-btn text-white font-bold rounded">确认提交采购需求</button>
                     </form>
+
+                    <!-- 采购黄色提示框 -->
+                    <div class="bg-amber-950/40 border border-amber-600/40 p-3 rounded-lg text-amber-200/90 text-xs leading-relaxed flex items-start space-x-2">
+                        <span class="text-base">💡</span>
+                        <div><strong>提示：</strong>可在备注里输入预期价格/交货时间。请注意此价格仅为您的心理期望，最终定价权在于联系您的供应商/店主。</div>
+                    </div>
                 </div>
                 <div class="md:col-span-2 mc-card p-5 space-y-4">
                     <h2 class="text-lg font-bold text-slate-200 border-b border-slate-700 pb-2">公共采购看板</h2>
@@ -94,8 +100,18 @@
                             <label class="block text-xs text-slate-400 mb-1">联系 QQ</label>
                             <input type="text" id="sell-contact" required class="w-full p-2 bg-slate-900 border border-slate-700 rounded focus:border-purple-500 outline-none">
                         </div>
+                        <div>
+                            <label class="block text-xs text-slate-400 mb-1">备注信息 (可选)</label>
+                            <input type="text" id="sell-note" placeholder="例如：可微调价格/打包优惠" class="w-full p-2 bg-slate-900 border border-slate-700 rounded focus:border-purple-500 outline-none">
+                        </div>
                         <button type="submit" class="w-full py-2 bg-purple-600 hover:bg-purple-500 text-white font-bold rounded">提交出售意向</button>
                     </form>
+
+                    <!-- 出售黄色提示框 -->
+                    <div class="bg-amber-950/40 border border-amber-600/40 p-3 rounded-lg text-amber-200/90 text-xs leading-relaxed flex items-start space-x-2">
+                        <span class="text-base">💡</span>
+                        <div><strong>提示：</strong>卖家提交的出售商品与 707 商店订单无冲突/影响时方可审核放单公示。</div>
+                    </div>
                 </div>
                 <div class="md:col-span-2 mc-card p-5 space-y-4">
                     <h2 class="text-lg font-bold text-slate-200 border-b border-slate-700 pb-2">公共出售意向看板</h2>
@@ -315,7 +331,7 @@
             if (confirm('确定删除商品？')) { await dbClient.from('goods').delete().eq('id', id); loadGoods(); }
         }
 
-        // --- 采购看板（含管理员放单/删除） ---
+        // --- 采购看板（勾选框控制放单/删除） ---
         async function loadOrders() {
             const { data } = await dbClient.from('orders').select('*').order('id', { ascending: false });
             ordersData = data || []; renderOrders();
@@ -330,19 +346,23 @@
             container.innerHTML = list.map(o => `
                 <div class="bg-slate-900/80 p-3 rounded-lg border border-slate-700 text-xs space-y-2">
                     <div class="flex justify-between items-center">
-                        <span class="font-bold text-emerald-400">玩家: ${escapeHtml(o.player_id)}</span>
-                        ${currentUser ? `<span class="px-2 py-0.5 rounded text-[10px] ${o.is_public ? 'bg-emerald-500/20 text-emerald-400' : 'bg-amber-500/20 text-amber-400'}">${o.is_public ? '已放单公示' : '待放单'}</span>` : ''}
+                        <span class="font-bold text-emerald-400">买家: ${escapeHtml(o.player_id)}</span>
+                        <div class="flex items-center space-x-2">
+                            ${currentUser ? `
+                                <label class="flex items-center space-x-1 cursor-pointer bg-slate-800 px-2 py-0.5 rounded border border-slate-700 hover:border-emerald-500">
+                                    <input type="checkbox" ${o.is_public ? 'checked' : ''} onchange="toggleOrderPublic(${o.id}, this.checked)" class="accent-emerald-500 cursor-pointer">
+                                    <span class="${o.is_public ? 'text-emerald-400 font-bold' : 'text-slate-400'} text-[11px]">放单公示</span>
+                                </label>
+                            ` : `<span class="px-2 py-0.5 rounded text-[10px] bg-emerald-500/20 text-emerald-400">已放单公示</span>`}
+                        </div>
                     </div>
                     <p class="text-slate-200">采购: ${escapeHtml(o.items)}</p>
                     <p class="text-slate-400">联系 QQ: ${escapeHtml(o.contact)}</p>
                     ${o.note ? `<p class="text-slate-400">备注: ${escapeHtml(o.note)}</p>` : ''}
                     
                     ${currentUser ? `
-                        <div class="pt-2 border-t border-slate-800 flex justify-end gap-3 text-xs">
-                            <button onclick="toggleOrderPublic(${o.id}, ${!o.is_public})" class="text-sky-400 hover:underline">
-                                ${o.is_public ? '取消公示' : '放单公示'}
-                            </button>
-                            <button onclick="deleteOrder(${o.id})" class="text-rose-400 hover:underline">删除条目</button>
+                        <div class="pt-2 border-t border-slate-800/80 flex justify-end">
+                            <button onclick="deleteOrder(${o.id})" class="text-rose-400 hover:underline text-[11px]">删除条目</button>
                         </div>
                     ` : ''}
                 </div>
@@ -373,11 +393,11 @@
                 note: document.getElementById('order-note').value,
                 is_public: false, status: '待处理'
             }]);
-            alert('提交成功！等待管理员放单公示。'); loadOrders();
+            alert('提交成功！等待管理员审核放单。'); loadOrders();
             document.getElementById('order-form').reset();
         }
 
-        // --- 出售意向（含管理员放单/删除） ---
+        // --- 出售意向（勾选框控制放单/删除/备注补全） ---
         async function loadSells() {
             const { data } = await dbClient.from('sell_ideas').select('*').order('id', { ascending: false });
             sellData = data || []; renderSells();
@@ -393,17 +413,22 @@
                 <div class="bg-slate-900/80 p-3 rounded-lg border border-slate-700 text-xs space-y-2">
                     <div class="flex justify-between items-center">
                         <span class="font-bold text-purple-400">卖家: ${escapeHtml(s.player_id)}</span>
-                        ${currentUser ? `<span class="px-2 py-0.5 rounded text-[10px] ${s.is_public ? 'bg-purple-500/20 text-purple-400' : 'bg-amber-500/20 text-amber-400'}">${s.is_public ? '已放单公示' : '待放单'}</span>` : ''}
+                        <div class="flex items-center space-x-2">
+                            ${currentUser ? `
+                                <label class="flex items-center space-x-1 cursor-pointer bg-slate-800 px-2 py-0.5 rounded border border-slate-700 hover:border-purple-500">
+                                    <input type="checkbox" ${s.is_public ? 'checked' : ''} onchange="toggleSellPublic(${s.id}, this.checked)" class="accent-purple-500 cursor-pointer">
+                                    <span class="${s.is_public ? 'text-purple-400 font-bold' : 'text-slate-400'} text-[11px]">放单公示</span>
+                                </label>
+                            ` : `<span class="px-2 py-0.5 rounded text-[10px] bg-purple-500/20 text-purple-400">已放单公示</span>`}
+                        </div>
                     </div>
                     <p class="text-slate-200">拟售: ${escapeHtml(s.items)}</p>
                     <p class="text-slate-400">联系 QQ: ${escapeHtml(s.contact)}</p>
+                    ${s.note ? `<p class="text-slate-400">备注: ${escapeHtml(s.note)}</p>` : ''}
                     
                     ${currentUser ? `
-                        <div class="pt-2 border-t border-slate-800 flex justify-end gap-3 text-xs">
-                            <button onclick="toggleSellPublic(${s.id}, ${!s.is_public})" class="text-sky-400 hover:underline">
-                                ${s.is_public ? '取消公示' : '放单公示'}
-                            </button>
-                            <button onclick="deleteSell(${s.id})" class="text-rose-400 hover:underline">删除条目</button>
+                        <div class="pt-2 border-t border-slate-800/80 flex justify-end">
+                            <button onclick="deleteSell(${s.id})" class="text-rose-400 hover:underline text-[11px]">删除条目</button>
                         </div>
                     ` : ''}
                 </div>
@@ -431,9 +456,10 @@
                 player_id: document.getElementById('sell-player').value,
                 items: document.getElementById('sell-items').value,
                 contact: document.getElementById('sell-contact').value,
+                note: document.getElementById('sell-note').value,
                 is_public: false, status: '待联系'
             }]);
-            alert('提交成功！等待管理员放单公示。'); loadSells();
+            alert('提交成功！等待管理员审核放单。'); loadSells();
             document.getElementById('sell-form').reset();
         }
 
