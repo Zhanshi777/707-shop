@@ -143,7 +143,6 @@
 
             <!-- 已登录状态 -->
             <div id="admin-panel" class="space-y-6 hidden text-sm">
-                <!-- 添加商品表单 -->
                 <div class="bg-slate-900/60 p-4 rounded-lg border border-slate-700 space-y-3">
                     <h4 class="font-bold text-emerald-400">发布 / 编辑商品</h4>
                     <input type="text" id="add-goods-title" placeholder="商品名称" class="w-full p-2 bg-slate-800 border border-slate-700 rounded">
@@ -156,48 +155,60 @@
         </div>
     </div>
 
-    <!-- 配置文件初始化与业务逻辑脚本 -->
+    <!-- 逻辑处理脚本 -->
     <script>
-        // Supabase 配置
         const SUPABASE_URL = "https://tearkjsdbiocboagemzi.supabase.co";
         const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRlYXJranNkYmlvY2JvYWdlbXppIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODkwOTE2OTcsImV4cCI6MjEwNDY2NzY5N30.zpMfihJUif20iHpoK__xNHtD8cIihHz_lfxq-Z9bLU0";
-        const ADMIN_PASSWORD = "707123"; // 你的后台密码，可在此处更改
+        const ADMIN_PASSWORD = "707123";
 
-        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        let dbClient = null;
         let isAdmin = false;
         let goodsData = [], ordersData = [], teamsData = [];
 
-        // 初始化加载
-        window.onload = () => {
-            loadGoods();
-            loadOrders();
-            loadTeams();
-        };
+        // 初始化
+        window.addEventListener('DOMContentLoaded', () => {
+            if (window.supabase) {
+                dbClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+                loadGoods();
+                loadOrders();
+                loadTeams();
+            } else {
+                console.error("Supabase SDK 没能正常加载");
+            }
+        });
 
-        // 标签切换
+        // 切换导航标签
         function switchTab(tab) {
             ['goods', 'order', 'team'].forEach(t => {
-                document.getElementById(`tab-${t}`).classList.add('hidden');
-                document.getElementById(`nav-${t}`).className = "px-3 py-1.5 rounded-lg text-slate-300 hover:text-white";
+                const el = document.getElementById(`tab-${t}`);
+                const nav = document.getElementById(`nav-${t}`);
+                if (el) el.classList.add('hidden');
+                if (nav) nav.className = "px-3 py-1.5 rounded-lg text-slate-300 hover:text-white";
             });
-            document.getElementById(`tab-${tab}`).classList.remove('hidden');
-            document.getElementById(`nav-${tab}`).className = "px-3 py-1.5 rounded-lg text-emerald-400 bg-slate-800";
+            
+            const targetEl = document.getElementById(`tab-${tab}`);
+            const targetNav = document.getElementById(`nav-${tab}`);
+            if (targetEl) targetEl.classList.remove('hidden');
+            if (targetNav) targetNav.className = "px-3 py-1.5 rounded-lg text-emerald-400 bg-slate-800";
         }
 
         /* ----- 商品逻辑 ----- */
         async function loadGoods() {
-            const { data } = await supabase.from('goods').select('*').order('id', { ascending: false });
+            if (!dbClient) return;
+            const { data, error } = await dbClient.from('goods').select('*').order('id', { ascending: false });
             goodsData = data || [];
             renderGoods();
         }
 
         function renderGoods() {
-            const keyword = document.getElementById('search-input').value.toLowerCase();
+            const keyword = (document.getElementById('search-input')?.value || '').toLowerCase();
             const container = document.getElementById('goods-list');
+            if (!container) return;
+            
             const list = goodsData.filter(g => g.title.toLowerCase().includes(keyword));
 
             if (list.length === 0) {
-                container.innerHTML = `<p class="col-span-full text-center text-slate-500 py-8">暂无相关商品信息</p>`;
+                container.innerHTML = `<p class="col-span-full text-center text-slate-500 py-8">暂无商品，请点击【管理后台】添加商品</p>`;
                 return;
             }
 
@@ -228,7 +239,7 @@
 
             if (!title || !price) return alert('商品名称和报价必填！');
 
-            await supabase.from('goods').insert([{ title, price, image_url, description }]);
+            await dbClient.from('goods').insert([{ title, price, image_url, description }]);
             alert('添加成功！');
             loadGoods();
             closeAdminModal();
@@ -236,21 +247,23 @@
 
         async function deleteGoods(id) {
             if (!confirm('确定删除该商品吗？')) return;
-            await supabase.from('goods').delete().eq('id', id);
+            await dbClient.from('goods').delete().eq('id', id);
             loadGoods();
         }
 
         /* ----- 订单逻辑 ----- */
         async function loadOrders() {
-            const { data } = await supabase.from('orders').select('*').order('id', { ascending: false });
+            if (!dbClient) return;
+            const { data } = await dbClient.from('orders').select('*').order('id', { ascending: false });
             ordersData = data || [];
             renderOrders();
         }
 
         function renderOrders() {
             const container = document.getElementById('orders-list');
+            if (!container) return;
             if (ordersData.length === 0) {
-                container.innerHTML = `<p class="text-slate-500 text-center py-6 text-xs">暂无订单</p>`;
+                container.innerHTML = `<p class="text-slate-500 text-center py-6 text-xs">暂无订单需求</p>`;
                 return;
             }
 
@@ -283,31 +296,33 @@
             const contact = document.getElementById('order-contact').value;
             const note = document.getElementById('order-note').value;
 
-            await supabase.from('orders').insert([{ player_id, items, contact, note }]);
+            await dbClient.from('orders').insert([{ player_id, items, contact, note }]);
             alert('订单提交成功！');
             document.getElementById('order-form').reset();
             loadOrders();
         }
 
         async function updateOrderStatus(id, status) {
-            await supabase.from('orders').update({ status }).eq('id', id);
+            await dbClient.from('orders').update({ status }).eq('id', id);
             loadOrders();
         }
 
         async function deleteOrder(id) {
-            await supabase.from('orders').delete().eq('id', id);
+            await dbClient.from('orders').delete().eq('id', id);
             loadOrders();
         }
 
         /* ----- 副本组队逻辑 ----- */
         async function loadTeams() {
-            const { data } = await supabase.from('teams').select('*').order('id', { ascending: false });
+            if (!dbClient) return;
+            const { data } = await dbClient.from('teams').select('*').order('id', { ascending: false });
             teamsData = data || [];
             renderTeams();
         }
 
         function renderTeams() {
             const container = document.getElementById('teams-list');
+            if (!container) return;
             if (teamsData.length === 0) {
                 container.innerHTML = `<p class="text-slate-500 text-center py-6 text-xs">暂无组队招募帖</p>`;
                 return;
@@ -324,7 +339,6 @@
                     </div>
                     <p class="text-slate-200">队伍需求: <span class="text-amber-300">${t.need_members}</span></p>
 
-                    <!-- 跟帖列表 -->
                     <div class="bg-slate-900/50 p-2 rounded space-y-1">
                         <p class="text-slate-400 text-[10px]">跟帖队伍 (${t.replies ? t.replies.length : 0})</p>
                         ${(t.replies || []).map(r => `
@@ -334,7 +348,6 @@
                         `).join('')}
                     </div>
 
-                    <!-- 跟帖输入 -->
                     <div class="flex gap-2 pt-1">
                         <input type="text" id="reply-msg-${t.id}" placeholder="留言/跟帖需求" class="flex-1 p-1 bg-slate-900 border border-slate-700 rounded text-xs outline-none">
                         <input type="text" id="reply-qq-${t.id}" placeholder="我的QQ" class="w-24 p-1 bg-slate-900 border border-slate-700 rounded text-xs outline-none">
@@ -352,7 +365,7 @@
             const qq = document.getElementById('team-qq').value;
             const need_members = document.getElementById('team-need').value;
 
-            await supabase.from('teams').insert([{ dungeon_name, leader, qq, need_members, replies: [] }]);
+            await dbClient.from('teams').insert([{ dungeon_name, leader, qq, need_members, replies: [] }]);
             alert('组队发布成功！');
             document.getElementById('team-form').reset();
             loadTeams();
@@ -367,13 +380,13 @@
             const replies = team.replies || [];
             replies.push({ player: '玩家', msg: msgInput.value, qq: qqInput.value });
 
-            await supabase.from('teams').update({ replies }).eq('id', id);
+            await dbClient.from('teams').update({ replies }).eq('id', id);
             loadTeams();
         }
 
         async function deleteTeam(id) {
             if (!confirm('确定删除该组队贴？')) return;
-            await supabase.from('teams').delete().eq('id', id);
+            await dbClient.from('teams').delete().eq('id', id);
             loadTeams();
         }
 
