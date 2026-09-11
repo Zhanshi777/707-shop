@@ -331,7 +331,7 @@
             if (confirm('确定删除商品？')) { await dbClient.from('goods').delete().eq('id', id); loadGoods(); }
         }
 
-        // --- 采购看板（勾选框控制放单/删除） ---
+        // --- 采购看板（全员控制【已结单】，管理员控制【放单公示】和【删除】） ---
         async function loadOrders() {
             const { data } = await dbClient.from('orders').select('*').order('id', { ascending: false });
             ordersData = data || []; renderOrders();
@@ -344,10 +344,20 @@
             if (!list.length) return container.innerHTML = `<p class="text-slate-500 text-center py-6 text-xs">暂无采购需求数据</p>`;
 
             container.innerHTML = list.map(o => `
-                <div class="bg-slate-900/80 p-3 rounded-lg border border-slate-700 text-xs space-y-2">
+                <div class="bg-slate-900/80 p-3 rounded-lg border border-slate-700 text-xs space-y-2 ${o.is_completed ? 'opacity-60' : ''}">
                     <div class="flex justify-between items-center">
-                        <span class="font-bold text-emerald-400">买家: ${escapeHtml(o.player_id)}</span>
                         <div class="flex items-center space-x-2">
+                            <span class="font-bold text-emerald-400">买家: ${escapeHtml(o.player_id)}</span>
+                            ${o.is_completed ? `<span class="bg-emerald-500/20 text-emerald-300 text-[10px] px-1.5 py-0.5 rounded border border-emerald-500/30">已结单</span>` : ''}
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <!-- 所有人都可以勾选【已结单】 -->
+                            <label class="flex items-center space-x-1 cursor-pointer bg-slate-800 px-2 py-0.5 rounded border border-slate-700 hover:border-emerald-500">
+                                <input type="checkbox" ${o.is_completed ? 'checked' : ''} onchange="toggleOrderCompleted(${o.id}, this.checked)" class="accent-emerald-500 cursor-pointer">
+                                <span class="${o.is_completed ? 'text-emerald-400 font-bold' : 'text-slate-400'} text-[11px]">已结单</span>
+                            </label>
+
+                            <!-- 仅管理员可勾选【放单公示】 -->
                             ${currentUser ? `
                                 <label class="flex items-center space-x-1 cursor-pointer bg-slate-800 px-2 py-0.5 rounded border border-slate-700 hover:border-emerald-500">
                                     <input type="checkbox" ${o.is_public ? 'checked' : ''} onchange="toggleOrderPublic(${o.id}, this.checked)" class="accent-emerald-500 cursor-pointer">
@@ -367,6 +377,12 @@
                     ` : ''}
                 </div>
             `).join('');
+        }
+
+        async function toggleOrderCompleted(id, newStatus) {
+            const { error } = await dbClient.from('orders').update({ is_completed: newStatus }).eq('id', id);
+            if (error) alert("更新状态失败: " + error.message);
+            else loadOrders();
         }
 
         async function toggleOrderPublic(id, newStatus) {
@@ -391,13 +407,13 @@
                 items: document.getElementById('order-items').value,
                 contact: document.getElementById('order-contact').value,
                 note: document.getElementById('order-note').value,
-                is_public: false, status: '待处理'
+                is_public: false, is_completed: false, status: '待处理'
             }]);
             alert('提交成功！等待管理员审核放单。'); loadOrders();
             document.getElementById('order-form').reset();
         }
 
-        // --- 出售意向（勾选框控制放单/删除/备注补全） ---
+        // --- 出售意向（全员控制【已售罄】，管理员控制【放单公示】和【删除】） ---
         async function loadSells() {
             const { data } = await dbClient.from('sell_ideas').select('*').order('id', { ascending: false });
             sellData = data || []; renderSells();
@@ -410,10 +426,20 @@
             if (!list.length) return container.innerHTML = `<p class="text-slate-500 text-center py-6 text-xs">暂无出售意向数据</p>`;
 
             container.innerHTML = list.map(s => `
-                <div class="bg-slate-900/80 p-3 rounded-lg border border-slate-700 text-xs space-y-2">
+                <div class="bg-slate-900/80 p-3 rounded-lg border border-slate-700 text-xs space-y-2 ${s.is_completed ? 'opacity-60' : ''}">
                     <div class="flex justify-between items-center">
-                        <span class="font-bold text-purple-400">卖家: ${escapeHtml(s.player_id)}</span>
                         <div class="flex items-center space-x-2">
+                            <span class="font-bold text-purple-400">卖家: ${escapeHtml(s.player_id)}</span>
+                            ${s.is_completed ? `<span class="bg-purple-500/20 text-purple-300 text-[10px] px-1.5 py-0.5 rounded border border-purple-500/30">已售罄</span>` : ''}
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <!-- 所有人都可以勾选【已售罄】 -->
+                            <label class="flex items-center space-x-1 cursor-pointer bg-slate-800 px-2 py-0.5 rounded border border-slate-700 hover:border-purple-500">
+                                <input type="checkbox" ${s.is_completed ? 'checked' : ''} onchange="toggleSellCompleted(${s.id}, this.checked)" class="accent-purple-500 cursor-pointer">
+                                <span class="${s.is_completed ? 'text-purple-400 font-bold' : 'text-slate-400'} text-[11px]">已售罄</span>
+                            </label>
+
+                            <!-- 仅管理员可勾选【放单公示】 -->
                             ${currentUser ? `
                                 <label class="flex items-center space-x-1 cursor-pointer bg-slate-800 px-2 py-0.5 rounded border border-slate-700 hover:border-purple-500">
                                     <input type="checkbox" ${s.is_public ? 'checked' : ''} onchange="toggleSellPublic(${s.id}, this.checked)" class="accent-purple-500 cursor-pointer">
@@ -433,6 +459,12 @@
                     ` : ''}
                 </div>
             `).join('');
+        }
+
+        async function toggleSellCompleted(id, newStatus) {
+            const { error } = await dbClient.from('sell_ideas').update({ is_completed: newStatus }).eq('id', id);
+            if (error) alert("更新状态失败: " + error.message);
+            else loadSells();
         }
 
         async function toggleSellPublic(id, newStatus) {
@@ -457,13 +489,13 @@
                 items: document.getElementById('sell-items').value,
                 contact: document.getElementById('sell-contact').value,
                 note: document.getElementById('sell-note').value,
-                is_public: false, status: '待联系'
+                is_public: false, is_completed: false, status: '待联系'
             }]);
             alert('提交成功！等待管理员审核放单。'); loadSells();
             document.getElementById('sell-form').reset();
         }
 
-        // --- 副本组队逻辑 ---
+        // --- 副本组队逻辑（全员可移除队员） ---
         async function loadTeams() {
             const { data, error } = await dbClient.from('teams').select('*').order('id', { ascending: false });
             if (error) return console.error("加载失败:", error);
@@ -493,13 +525,17 @@
                         <div class="bg-slate-900/40 p-2.5 rounded border border-slate-800 space-y-2">
                             <div class="text-slate-400 font-bold text-[11px]">📋 已响应的队员 (${replies.length})：</div>
                             <div class="space-y-1.5">
-                                ${replies.map(r => `
+                                ${replies.map((r, index) => `
                                     <div class="flex justify-between items-center bg-slate-800/80 px-2 py-1 rounded border border-slate-700/50">
                                         <div>
                                             <span class="text-emerald-400 font-bold">${escapeHtml(r.player)}</span>
                                             <span class="text-slate-300 ml-2">QQ: ${escapeHtml(r.contact)}</span>
                                         </div>
-                                        <span class="text-slate-500 text-[10px]">${escapeHtml(r.time || '')}</span>
+                                        <div class="flex items-center space-x-2">
+                                            <span class="text-slate-500 text-[10px]">${escapeHtml(r.time || '')}</span>
+                                            <!-- 所有人都有权限删除该队员 -->
+                                            <button onclick="handleRemoveMember(${t.id}, ${index})" class="text-rose-400 hover:text-rose-300 text-[11px] ml-1 bg-rose-950/40 px-1.5 py-0.5 rounded border border-rose-800/50">✕ 删除</button>
+                                        </div>
                                     </div>
                                 `).join('')}
                             </div>
@@ -512,10 +548,30 @@
                         <button onclick="handleJoinTeam(${t.id})" class="px-3 py-1.5 bg-sky-600 hover:bg-sky-500 text-white font-bold rounded text-xs whitespace-nowrap">申请加入</button>
                     </div>
 
-                    ${currentUser ? `<div class="pt-1"><button onclick="deleteTeam(${t.id})" class="text-rose-400 text-xs hover:underline">删除帖子</button></div>` : ''}
+                    ${currentUser ? `<div class="pt-1"><button onclick="deleteTeam(${t.id})" class="text-rose-400 text-xs hover:underline">删除整个队伍帖子</button></div>` : ''}
                 </div>
                 `;
             }).join('');
+        }
+
+        async function handleRemoveMember(teamId, memberIndex) {
+            if (!confirm("确定移除该队员？")) return;
+            const team = teamsData.find(t => t.id === teamId);
+            if (!team) return;
+
+            const currentReplies = Array.isArray(team.replies) ? team.replies : [];
+            currentReplies.splice(memberIndex, 1);
+
+            const { error } = await dbClient
+                .from('teams')
+                .update({ replies: currentReplies })
+                .eq('id', teamId);
+
+            if (error) {
+                alert('移除队员失败: ' + error.message);
+            } else {
+                loadTeams();
+            }
         }
 
         async function handleJoinTeam(teamId) {
@@ -575,7 +631,7 @@
         }
 
         async function deleteTeam(id) {
-            if (!currentUser) return alert("仅管理员可删除组队帖！");
+            if (!currentUser) return alert("仅管理员可删除整个组队帖！");
             if (confirm('确定删除该组队帖？')) {
                 await dbClient.from('teams').delete().eq('id', id);
                 loadTeams();
