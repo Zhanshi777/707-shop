@@ -183,8 +183,8 @@
                     </button>
                 </div>
 
-                <!-- 会员卡片公示列表展示网格 -->
-                <div id="vip-members-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- 会员卡片公示列表展示网格（改为1列/2列布局） -->
+                <div id="vip-members-list" class="grid grid-cols-1 md:grid-cols-2 gap-8">
                     <!-- 动态加载 -->
                 </div>
             </div>
@@ -234,7 +234,7 @@
         </div>
     </div>
 
-    <!-- 修改商品弹窗（仅管理员可见可操作） -->
+    <!-- 修改商品弹窗 -->
     <div id="edit-goods-modal" class="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 z-50 hidden">
         <div class="mc-card max-w-lg w-full p-6 space-y-4 max-h-[90vh] overflow-y-auto">
             <div class="flex justify-between items-center border-b border-slate-700 pb-2">
@@ -275,6 +275,7 @@
             </div>
         </div>
     </div>
+    
     <!-- 管理员 Auth 登录弹窗 -->
     <div id="admin-modal" class="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 z-50 hidden">
         <div class="mc-card max-w-xl w-full p-6 space-y-4 max-h-[90vh] overflow-y-auto">
@@ -301,8 +302,6 @@
                 </div>
                 <div class="bg-slate-900/60 p-4 rounded-lg border border-slate-700 space-y-3">
                     <h4 class="font-bold text-emerald-400">发布商品</h4>
-                    
-                    <!-- 分类选择框 -->
                     <div>
                         <label class="block text-xs text-slate-400 mb-1">商品类别</label>
                         <select id="add-goods-category" class="w-full p-2 bg-slate-800 border border-slate-700 rounded text-slate-200 outline-none">
@@ -311,7 +310,6 @@
                             <option value="会员区（会员使用积分兑换）">会员区（会员使用积分兑换）</option>
                         </select>
                     </div>
-                    <!-- 销售渠道输入框 -->
                     <div>
                         <label class="block text-xs text-slate-400 mb-1">销售渠道 / 地点</label>
                         <input type="text" id="add-goods-channel" value="湘江港地下商业街右侧头铺最底层" placeholder="例如：湘江港地下商业街右侧头铺最底层" class="w-full p-2 bg-slate-800 border border-slate-700 rounded text-slate-200 outline-none">
@@ -434,23 +432,25 @@
             }
 
             container.innerHTML = vipData.map(v => `
-                <div class="mc-card overflow-hidden flex flex-col justify-between border border-amber-500/30">
-                    <div class="relative h-48 bg-slate-900 flex items-center justify-center p-2">
-                        <span class="absolute top-2 left-2 bg-amber-500/20 text-amber-300 text-[10px] px-2 py-0.5 rounded border border-amber-500/40 font-bold">
+                <div class="mc-card overflow-hidden flex flex-col justify-between border border-amber-500/30 hover:border-amber-500/60 transition-all duration-300 shadow-xl">
+                    <!-- 大号海报展现框 (高度从 192px 扩大到 480px) -->
+                    <div class="relative h-[480px] bg-slate-900/90 flex items-center justify-center p-3 border-b border-slate-800">
+                        <span class="absolute top-3 left-3 bg-amber-500/20 text-amber-300 text-xs px-2.5 py-1 rounded border border-amber-500/40 font-bold z-10 shadow">
                             ${escapeHtml(v.level || '至尊VIP')}
                         </span>
-                        ${v.poster_url ? `<img src="${escapeHtml(v.poster_url)}" class="max-h-full max-w-full object-contain rounded">` : `<span class="text-slate-600 text-xs">暂无会员海报</span>`}
+                        ${v.poster_url ? `<img src="${escapeHtml(v.poster_url)}" class="max-h-full max-w-full object-contain rounded shadow-lg">` : `<span class="text-slate-600 text-sm">暂无会员海报</span>`}
                     </div>
-                    <div class="p-4 space-y-3">
-                        <h3 class="font-extrabold text-lg text-amber-200">${escapeHtml(v.name)}</h3>
-                        <div class="grid grid-cols-2 gap-2 bg-slate-900/60 p-2.5 rounded border border-slate-800 text-xs">
-                            <div>💰 余额: <span class="text-emerald-400 font-bold">${escapeHtml(v.balance || '0')}</span></div>
-                            <div>🪙 积分: <span class="text-amber-400 font-bold">${v.points || 0}</span></div>
+                    
+                    <div class="p-5 space-y-4">
+                        <h3 class="font-extrabold text-2xl text-amber-200">${escapeHtml(v.name)}</h3>
+                        <div class="grid grid-cols-2 gap-3 bg-slate-900/80 p-3.5 rounded-lg border border-slate-800 text-sm">
+                            <div>💰 余额: <span class="text-emerald-400 font-bold text-base ml-1">${escapeHtml(v.balance || '0')}</span></div>
+                            <div>🪙 积分: <span class="text-amber-400 font-bold text-base ml-1">${v.points || 0}</span></div>
                         </div>
-                        <p class="text-xs text-slate-400 leading-relaxed">${escapeHtml(v.description || '暂无特权说明')}</p>
+                        <p class="text-sm text-slate-300 leading-relaxed min-h-[2.5rem]">${escapeHtml(v.description || '暂无特权说明')}</p>
                     </div>
                     ${currentUser ? `
-                        <div class="p-3 border-t border-slate-700/60 bg-slate-900/50 flex justify-end space-x-3 text-xs">
+                        <div class="p-4 border-t border-slate-700/60 bg-slate-900/50 flex justify-end space-x-4 text-xs">
                             <button onclick="openVipModal(${v.id})" class="text-amber-400 hover:underline font-semibold">修改信息</button>
                             <button onclick="deleteVipMember(${v.id})" class="text-rose-400 hover:underline font-semibold">删除</button>
                         </div>
