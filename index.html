@@ -24,6 +24,7 @@
                 <button onclick="switchTab('order')" id="nav-order" class="px-2.5 py-1.5 rounded-lg text-slate-300 hover:text-white">我有采购需求</button>
                 <button onclick="switchTab('sell')" id="nav-sell" class="px-2.5 py-1.5 rounded-lg text-slate-300 hover:text-white">我有出售想法</button>
                 <button onclick="switchTab('team')" id="nav-team" class="px-2.5 py-1.5 rounded-lg text-slate-300 hover:text-white">副本组队</button>
+                <button onclick="switchTab('vip')" id="nav-vip" class="px-2.5 py-1.5 rounded-lg text-amber-300 hover:text-amber-200">👑 凯尔希至尊会员</button>
                 <button onclick="openAdminModal()" id="nav-admin" class="px-2.5 py-1.5 rounded-lg text-amber-400 border border-amber-500/30 hover:bg-amber-500/10">管理后台</button>
             </nav>
         </div>
@@ -158,6 +159,60 @@
                 </div>
             </div>
         </section>
+
+        <!-- 凯尔希至尊会员专区 -->
+        <section id="tab-vip" class="space-y-6 hidden">
+            <div class="mc-card p-6 border border-amber-500/30 bg-gradient-to-br from-slate-900 via-slate-800 to-amber-950/20 rounded-2xl shadow-xl space-y-6">
+                <div class="flex flex-col md:flex-row items-center justify-between border-b border-amber-500/20 pb-6 gap-4">
+                    <div class="space-y-2 text-center md:text-left">
+                        <div class="inline-flex items-center space-x-2 bg-amber-500/10 border border-amber-500/30 px-3 py-1 rounded-full text-xs text-amber-300 font-semibold">
+                            <span>✨ 707 商店尊享礼遇</span>
+                        </div>
+                        <h1 class="text-2xl md:text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-amber-200 via-amber-400 to-yellow-500">
+                            凯尔希至尊会员专区
+                        </h1>
+                        <p class="text-sm text-slate-400 max-w-xl">
+                            专属服务预留区。会员特权、限定兑换与专属通道建设中，敬请期待！
+                        </p>
+                    </div>
+                    <div class="bg-amber-500/10 p-4 rounded-xl border border-amber-500/20 text-center min-w-[180px]">
+                        <span class="text-3xl">💎</span>
+                        <div class="text-xs text-amber-300 font-bold mt-1">至尊 VIP 专属</div>
+                    </div>
+                </div>
+
+                <!-- 预留占位内容展示板 -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2">
+                    <div class="bg-slate-900/60 p-5 rounded-xl border border-slate-700/60 space-y-2">
+                        <div class="text-amber-400 text-lg font-bold flex items-center space-x-2">
+                            <span>🎁 专属权益预留</span>
+                        </div>
+                        <p class="text-xs text-slate-400 leading-relaxed">
+                            此处可放置凯尔希至尊会员专属折扣、优先交割权及独家福利说明。
+                        </p>
+                    </div>
+
+                    <div class="bg-slate-900/60 p-5 rounded-xl border border-slate-700/60 space-y-2">
+                        <div class="text-amber-400 text-lg font-bold flex items-center space-x-2">
+                            <span>🪙 积分兑换规则</span>
+                        </div>
+                        <p class="text-xs text-slate-400 leading-relaxed">
+                            后续可配套“会员区商品”的兑换流程与专属积分获取规则展示。
+                        </p>
+                    </div>
+
+                    <div class="bg-slate-900/60 p-5 rounded-xl border border-slate-700/60 space-y-2">
+                        <div class="text-amber-400 text-lg font-bold flex items-center space-x-2">
+                            <span>⚡ 快速申请通道</span>
+                        </div>
+                        <p class="text-xs text-slate-400 leading-relaxed">
+                            如需开通或咨询会员，请联系店主或加入官方 QQ 群 1082325695 了解。
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
     </main>
 
     <footer class="mt-8 border-t border-emerald-500/30 bg-slate-900/90 py-6 text-center shadow-lg">
@@ -202,6 +257,12 @@
                             <option value="酒水">酒水</option>
                             <option value="会员区（会员使用积分兑换）">会员区（会员使用积分兑换）</option>
                         </select>
+                    </div>
+
+                    <!-- 销售渠道输入框 -->
+                    <div>
+                        <label class="block text-xs text-slate-400 mb-1">销售渠道 / 地点</label>
+                        <input type="text" id="add-goods-channel" value="湘江港地下商业街右侧头铺最底层" placeholder="例如：湘江港地下商业街右侧头铺最底层" class="w-full p-2 bg-slate-800 border border-slate-700 rounded text-slate-200 outline-none">
                     </div>
 
                     <input type="text" id="add-goods-title" placeholder="商品名称" class="w-full p-2 bg-slate-800 border border-slate-700 rounded">
@@ -282,12 +343,26 @@
         }
 
         function switchTab(tab) {
-            ['goods', 'order', 'sell', 'team'].forEach(t => {
+            ['goods', 'order', 'sell', 'team', 'vip'].forEach(t => {
                 document.getElementById(`tab-${t}`)?.classList.add('hidden');
-                document.getElementById(`nav-${t}`).className = "px-2.5 py-1.5 rounded-lg text-slate-300 hover:text-white";
+                const btn = document.getElementById(`nav-${t}`);
+                if (btn) {
+                    if (t === 'vip') {
+                        btn.className = "px-2.5 py-1.5 rounded-lg text-amber-300 hover:text-amber-200";
+                    } else {
+                        btn.className = "px-2.5 py-1.5 rounded-lg text-slate-300 hover:text-white";
+                    }
+                }
             });
             document.getElementById(`tab-${tab}`)?.classList.remove('hidden');
-            document.getElementById(`nav-${tab}`).className = "px-2.5 py-1.5 rounded-lg text-emerald-400 bg-slate-800";
+            const activeBtn = document.getElementById(`nav-${tab}`);
+            if (activeBtn) {
+                if (tab === 'vip') {
+                    activeBtn.className = "px-2.5 py-1.5 rounded-lg text-amber-300 font-bold bg-amber-500/20 border border-amber-500/40";
+                } else {
+                    activeBtn.className = "px-2.5 py-1.5 rounded-lg text-emerald-400 bg-slate-800 font-bold";
+                }
+            }
         }
 
         // 商品分类筛选逻辑
@@ -320,14 +395,16 @@
             
             const filtered = goodsData.filter(g => {
                 const matchKeyword = (g.title || '').toLowerCase().includes(keyword);
-                const gCategory = g.category || '地图画'; // 默认兼照顾旧数据为地图画
+                const gCategory = g.category || '地图画';
                 const matchCategory = (currentGoodsCategory === 'all') || (gCategory === currentGoodsCategory);
                 return matchKeyword && matchCategory;
             });
 
             if (!filtered.length) return container.innerHTML = `<p class="col-span-full text-center text-slate-500 py-8">该分类下暂无商品</p>`;
             
-            container.innerHTML = filtered.map(g => `
+            container.innerHTML = filtered.map(g => {
+                const channelText = g.sales_channel || '湘江港地下商业街右侧头铺最底层';
+                return `
                 <div class="mc-card overflow-hidden flex flex-col justify-between">
                     <div class="relative h-48 bg-slate-900 flex items-center justify-center p-2">
                         <span class="absolute top-2 left-2 bg-emerald-500/20 text-emerald-400 text-[10px] px-2 py-0.5 rounded border border-emerald-500/30 font-semibold">
@@ -337,6 +414,13 @@
                     </div>
                     <div class="p-4 space-y-2">
                         <h3 class="font-bold text-base text-slate-100">${escapeHtml(g.title)}</h3>
+                        
+                        <!-- 销售渠道标签 -->
+                        <div class="bg-emerald-950/40 border border-emerald-800/40 text-emerald-300 text-[11px] px-2 py-1 rounded flex items-center space-x-1">
+                            <span>📍 渠道：</span>
+                            <span class="font-medium truncate" title="${escapeHtml(channelText)}">${escapeHtml(channelText)}</span>
+                        </div>
+
                         <p class="text-xs text-slate-400 line-clamp-2">${escapeHtml(g.description || '暂无描述')}</p>
                     </div>
                     <div class="p-4 border-t border-slate-700/50 flex justify-between items-center bg-slate-900/30">
@@ -344,12 +428,14 @@
                         ${currentUser ? `<button onclick="deleteGoods(${g.id})" class="text-xs text-rose-400 hover:underline">删除</button>` : ''}
                     </div>
                 </div>
-            `).join('');
+                `;
+            }).join('');
         }
 
         async function handleAddGoods() {
             if (!currentUser) return alert("只有管理员可添加商品");
             const category = document.getElementById('add-goods-category').value;
+            const sales_channel = document.getElementById('add-goods-channel').value.trim() || '湘江港地下商业街右侧头铺最底层';
             const title = document.getElementById('add-goods-title').value.trim();
             const price = document.getElementById('add-goods-price').value.trim();
             const fileInput = document.getElementById('add-goods-file');
@@ -364,7 +450,7 @@
                 await dbClient.storage.from('shop-images').upload(fileName, file);
                 image_url = dbClient.storage.from('shop-images').getPublicUrl(fileName).data.publicUrl;
             }
-            const { error } = await dbClient.from('goods').insert([{ category, title, price, image_url, description }]);
+            const { error } = await dbClient.from('goods').insert([{ category, sales_channel, title, price, image_url, description }]);
             if (error) {
                 alert("添加商品失败：" + error.message);
             } else {
