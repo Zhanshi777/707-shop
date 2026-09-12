@@ -213,6 +213,49 @@
             你有需求，我来满足，加Q群 1082325695 / 1014137105
         </h2>
     </footer>
+
+    <!-- 修改商品弹窗（仅管理员可见可操作） -->
+    <div id="edit-goods-modal" class="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 z-50 hidden">
+        <div class="mc-card max-w-lg w-full p-6 space-y-4 max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center border-b border-slate-700 pb-2">
+                <h3 class="font-bold text-amber-400 text-lg">修改商品信息</h3>
+                <button onclick="closeEditGoodsModal()" class="text-slate-400 hover:text-white">✕</button>
+            </div>
+            <input type="hidden" id="edit-goods-id">
+            <div class="space-y-3 text-sm">
+                <div>
+                    <label class="block text-xs text-slate-400 mb-1">商品类别</label>
+                    <select id="edit-goods-category" class="w-full p-2 bg-slate-800 border border-slate-700 rounded text-slate-200 outline-none">
+                        <option value="地图画">地图画</option>
+                        <option value="酒水">酒水</option>
+                        <option value="会员区（会员使用积分兑换）">会员区（会员使用积分兑换）</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs text-slate-400 mb-1">销售渠道 / 地点</label>
+                    <input type="text" id="edit-goods-channel" class="w-full p-2 bg-slate-800 border border-slate-700 rounded text-slate-200 outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs text-slate-400 mb-1">商品名称</label>
+                    <input type="text" id="edit-goods-title" class="w-full p-2 bg-slate-800 border border-slate-700 rounded outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs text-slate-400 mb-1">报价</label>
+                    <input type="text" id="edit-goods-price" class="w-full p-2 bg-slate-800 border border-slate-700 rounded outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs text-slate-400 mb-1">更换图片 (可选，留空保留原图片)</label>
+                    <input type="file" id="edit-goods-file" accept="image/*" class="w-full p-1 bg-slate-800 border border-slate-700 rounded text-xs text-slate-300">
+                </div>
+                <div>
+                    <label class="block text-xs text-slate-400 mb-1">商品说明</label>
+                    <textarea id="edit-goods-desc" class="w-full p-2 bg-slate-800 border border-slate-700 rounded outline-none h-20"></textarea>
+                </div>
+                <button onclick="handleSaveEditGoods()" class="w-full py-2 bg-amber-600 hover:bg-amber-500 font-bold rounded text-white">确认修改并保存</button>
+            </div>
+        </div>
+    </div>
+
     <!-- 管理员 Auth 登录弹窗 -->
     <div id="admin-modal" class="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 z-50 hidden">
         <div class="mc-card max-w-xl w-full p-6 space-y-4 max-h-[90vh] overflow-y-auto">
@@ -365,8 +408,14 @@
             renderGoods();
         }
         async function loadGoods() {
-            const { data } = await dbClient.from('goods').select('*').order('id', { ascending: false });
-            goodsData = data || []; renderGoods();
+            // 优先尝试按 sort_order 排序，如果数据库暂未添加 sort_order 字段则自动降级按 id 降序排序
+            let { data, error } = await dbClient.from('goods').select('*').order('sort_order', { ascending: true });
+            if (error) {
+                const fallback = await dbClient.from('goods').select('*').order('id', { ascending: false });
+                data = fallback.data;
+            }
+            goodsData = data || []; 
+            renderGoods();
         }
         function renderGoods() {
             const container = document.getElementById('goods-list');
@@ -380,7 +429,7 @@
             });
             if (!filtered.length) return container.innerHTML = `<p class="col-span-full text-center text-slate-500 py-8">该分类下暂无商品</p>`;
             
-            container.innerHTML = filtered.map(g => {
+            container.innerHTML = filtered.map((g, index) => {
                 const channelText = g.sales_channel || '湘江港地下商业街右侧头铺最底层';
                 return `
                 <div class="mc-card overflow-hidden flex flex-col justify-between">
@@ -400,9 +449,25 @@
                         </div>
                         <p class="text-xs text-slate-400 line-clamp-2">${escapeHtml(g.description || '暂无描述')}</p>
                     </div>
-                    <div class="p-4 border-t border-slate-700/50 flex justify-between items-center bg-slate-900/30">
-                        <span class="text-emerald-400 font-bold text-sm">${escapeHtml(g.price)}</span>
-                        ${currentUser ? `<button onclick="deleteGoods(${g.id})" class="text-xs text-rose-400 hover:underline">删除</button>` : ''}
+                    <div class="p-4 border-t border-slate-700/50 flex flex-col gap-2 bg-slate-900/30">
+                        <div class="flex justify-between items-center">
+                            <span class="text-emerald-400 font-bold text-sm">${escapeHtml(g.price)}</span>
+                            ${currentUser ? `
+                                <div class="flex items-center space-x-2 text-xs">
+                                    <button onclick="openEditGoodsModal(${g.id})" class="text-amber-400 hover:underline">修改</button>
+                                    <button onclick="deleteGoods(${g.id})" class="text-rose-400 hover:underline">删除</button>
+                                </div>
+                            ` : ''}
+                        </div>
+                        ${currentUser ? `
+                            <div class="flex items-center justify-between border-t border-slate-800/80 pt-2 text-[11px]">
+                                <span class="text-slate-500">排序调整:</span>
+                                <div class="flex space-x-1">
+                                    <button onclick="moveGoods(${index}, 'up')" ${index === 0 ? 'disabled class="opacity-30 text-slate-500 cursor-not-allowed"' : 'class="px-2 py-0.5 bg-slate-800 border border-slate-700 text-slate-300 rounded hover:bg-slate-700"'} title="向前调高">⬆️ 上移</button>
+                                    <button onclick="moveGoods(${index}, 'down')" ${index === filtered.length - 1 ? 'disabled class="opacity-30 text-slate-500 cursor-not-allowed"' : 'class="px-2 py-0.5 bg-slate-800 border border-slate-700 text-slate-300 rounded hover:bg-slate-700"'} title="向后调低">⬇️ 下移</button>
+                                </div>
+                            </div>
+                        ` : ''}
                     </div>
                 </div>
                 `;
@@ -424,11 +489,107 @@
                 await dbClient.storage.from('shop-images').upload(fileName, file);
                 image_url = dbClient.storage.from('shop-images').getPublicUrl(fileName).data.publicUrl;
             }
-            const { error } = await dbClient.from('goods').insert([{ category, sales_channel, title, price, image_url, description }]);
+            // 新添加的商品默认排序排在第一位
+            const minOrder = goodsData.length > 0 ? Math.min(...goodsData.map(g => g.sort_order || 0)) - 1 : 1;
+            const { error } = await dbClient.from('goods').insert([{ category, sales_channel, title, price, image_url, description, sort_order: minOrder }]);
             if (error) {
                 alert("添加商品失败：" + error.message);
             } else {
                 alert('添加成功！'); loadGoods(); closeAdminModal();
+            }
+        }
+        // 打开商品修改弹窗
+        function openEditGoodsModal(id) {
+            if (!currentUser) return alert("只有管理员可以修改商品！");
+            const item = goodsData.find(g => g.id === id);
+            if (!item) return;
+
+            document.getElementById('edit-goods-id').value = item.id;
+            document.getElementById('edit-goods-category').value = item.category || '地图画';
+            document.getElementById('edit-goods-channel').value = item.sales_channel || '湘江港地下商业街右侧头铺最底层';
+            document.getElementById('edit-goods-title').value = item.title || '';
+            document.getElementById('edit-goods-price').value = item.price || '';
+            document.getElementById('edit-goods-desc').value = item.description || '';
+            document.getElementById('edit-goods-file').value = '';
+
+            document.getElementById('edit-goods-modal').classList.remove('hidden');
+        }
+        function closeEditGoodsModal() {
+            document.getElementById('edit-goods-modal').classList.add('hidden');
+        }
+        // 保存商品修改
+        async function handleSaveEditGoods() {
+            if (!currentUser) return alert("只有管理员可以修改商品！");
+            const id = document.getElementById('edit-goods-id').value;
+            const category = document.getElementById('edit-goods-category').value;
+            const sales_channel = document.getElementById('edit-goods-channel').value.trim();
+            const title = document.getElementById('edit-goods-title').value.trim();
+            const price = document.getElementById('edit-goods-price').value.trim();
+            const description = document.getElementById('edit-goods-desc').value.trim();
+            const fileInput = document.getElementById('edit-goods-file');
+
+            if (!title || !price) return alert("请填写完整的商品名称和报价！");
+
+            const updateData = { category, sales_channel, title, price, description };
+
+            if (fileInput.files.length > 0) {
+                const file = fileInput.files[0];
+                const fileName = `${Date.now()}_${file.name}`;
+                const { error: uploadErr } = await dbClient.storage.from('shop-images').upload(fileName, file);
+                if (!uploadErr) {
+                    updateData.image_url = dbClient.storage.from('shop-images').getPublicUrl(fileName).data.publicUrl;
+                }
+            }
+
+            const { error } = await dbClient.from('goods').update(updateData).eq('id', id);
+            if (error) {
+                alert("修改商品失败：" + error.message);
+            } else {
+                alert('商品信息已成功修改！');
+                closeEditGoodsModal();
+                loadGoods();
+            }
+        }
+        // 管理员调整商品顺序（上移 / 下移）
+        async function moveGoods(currentIndex, direction) {
+            if (!currentUser) return alert("只有管理员可以调整摆放顺序！");
+
+            const keyword = document.getElementById('search-input')?.value.trim().toLowerCase() || '';
+            const filtered = goodsData.filter(g => {
+                const matchKeyword = (g.title || '').toLowerCase().includes(keyword);
+                const gCategory = g.category || '地图画';
+                const matchCategory = (currentGoodsCategory === 'all') || (gCategory === currentGoodsCategory);
+                return matchKeyword && matchCategory;
+            });
+
+            const targetIndex = direction === 'up' ? currentIndex - 1 : currentIndex + 1;
+            if (targetIndex < 0 || targetIndex >= filtered.length) return;
+
+            const itemA = filtered[currentIndex];
+            const itemB = filtered[targetIndex];
+
+            const indexA = goodsData.findIndex(g => g.id === itemA.id);
+            const indexB = goodsData.findIndex(g => g.id === itemB.id);
+
+            if (indexA !== -1 && indexB !== -1) {
+                const temp = goodsData[indexA];
+                goodsData[indexA] = goodsData[indexB];
+                goodsData[indexB] = temp;
+            }
+
+            for (let i = 0; i < goodsData.length; i++) {
+                goodsData[i].sort_order = i + 1;
+            }
+
+            renderGoods();
+
+            try {
+                await Promise.all([
+                    dbClient.from('goods').update({ sort_order: goodsData[indexA].sort_order }).eq('id', goodsData[indexA].id),
+                    dbClient.from('goods').update({ sort_order: goodsData[indexB].sort_order }).eq('id', goodsData[indexB].id)
+                ]);
+            } catch (e) {
+                console.error("更新排序保存至数据库失败:", e);
             }
         }
         async function deleteGoods(id) {
