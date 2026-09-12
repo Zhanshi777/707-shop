@@ -40,7 +40,6 @@
                 </div>
                 <input type="text" id="search-input" oninput="renderGoods()" placeholder="搜索商品名称..." class="px-4 py-2 bg-slate-900 border border-slate-700 rounded-lg text-sm w-full md:w-64 focus:outline-none focus:border-emerald-500">
             </div>
-
             <!-- 商品分类切换按钮 -->
             <div class="flex flex-wrap gap-2 border-b border-slate-700/80 pb-3">
                 <button onclick="filterCategory('all')" id="cat-btn-all" class="px-3.5 py-1.5 rounded-lg text-xs font-bold bg-emerald-500 text-white transition-all">全部商品</button>
@@ -48,10 +47,8 @@
                 <button onclick="filterCategory('酒水')" id="cat-btn-酒水" class="px-3.5 py-1.5 rounded-lg text-xs font-bold bg-slate-800 text-slate-300 hover:text-white transition-all">酒水</button>
                 <button onclick="filterCategory('会员区（会员使用积分兑换）')" id="cat-btn-会员区" class="px-3.5 py-1.5 rounded-lg text-xs font-bold bg-slate-800 text-slate-300 hover:text-white transition-all">会员区（积分兑换）</button>
             </div>
-
             <div id="goods-list" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"></div>
         </section>
-
         <!-- 采购需求 -->
         <section id="tab-order" class="space-y-6 hidden">
             <div class="grid md:grid-cols-3 gap-6">
@@ -87,7 +84,6 @@
                 </div>
             </div>
         </section>
-
         <!-- 出售意向 -->
         <section id="tab-sell" class="space-y-6 hidden">
             <div class="grid md:grid-cols-3 gap-6">
@@ -123,7 +119,6 @@
                 </div>
             </div>
         </section>
-
         <!-- 副本组队 -->
         <section id="tab-team" class="space-y-6 hidden">
             <div class="grid md:grid-cols-3 gap-6">
@@ -159,7 +154,6 @@
                 </div>
             </div>
         </section>
-
         <!-- 凯尔希至尊会员专区 -->
         <section id="tab-vip" class="space-y-6 hidden">
             <div class="mc-card p-6 border border-amber-500/30 bg-gradient-to-br from-slate-900 via-slate-800 to-amber-950/20 rounded-2xl shadow-xl space-y-6">
@@ -180,7 +174,6 @@
                         <div class="text-xs text-amber-300 font-bold mt-1">至尊 VIP 专属</div>
                     </div>
                 </div>
-
                 <!-- 预留占位内容展示板 -->
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2">
                     <div class="bg-slate-900/60 p-5 rounded-xl border border-slate-700/60 space-y-2">
@@ -191,7 +184,6 @@
                             此处可放置凯尔希至尊会员专属折扣、优先交割权及独家福利说明。
                         </p>
                     </div>
-
                     <div class="bg-slate-900/60 p-5 rounded-xl border border-slate-700/60 space-y-2">
                         <div class="text-amber-400 text-lg font-bold flex items-center space-x-2">
                             <span>🪙 积分兑换规则</span>
@@ -200,27 +192,27 @@
                             后续可配套“会员区商品”的兑换流程与专属积分获取规则展示。
                         </p>
                     </div>
-
                     <div class="bg-slate-900/60 p-5 rounded-xl border border-slate-700/60 space-y-2">
                         <div class="text-amber-400 text-lg font-bold flex items-center space-x-2">
                             <span>⚡ 快速申请通道</span>
                         </div>
-                        <p class="text-xs text-slate-400 leading-relaxed">
-                            如需开通或咨询会员，请联系店主或加入官方 QQ 群 1082325695 了解。
+                        <p class="text-xs text-slate-400 leading-relaxed mb-2">
+                            如需开通或咨询会员，请联系店主或加入以下 QQ 群了解：
                         </p>
+                        <div class="text-xs text-slate-300 space-y-1">
+                            <div>• <strong class="text-slate-100">707 官方群：</strong>1082325695</div>
+                            <div>• <strong class="text-slate-100">联动合作群：</strong>1014137105</div>
+                        </div>
                     </div>
                 </div>
             </div>
         </section>
-
     </main>
-
     <footer class="mt-8 border-t border-emerald-500/30 bg-slate-900/90 py-6 text-center shadow-lg">
         <h2 class="text-2xl md:text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-teal-200 to-emerald-400">
-            你有需求，我来满足，加Q群 1082325695
+            你有需求，我来满足，加Q群 1082325695 / 1014137105
         </h2>
     </footer>
-
     <!-- 管理员 Auth 登录弹窗 -->
     <div id="admin-modal" class="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 z-50 hidden">
         <div class="mc-card max-w-xl w-full p-6 space-y-4 max-h-[90vh] overflow-y-auto">
@@ -240,7 +232,6 @@
                 </div>
                 <button onclick="loginAdminAuth()" class="w-full py-2 bg-amber-600 hover:bg-amber-500 font-bold rounded">登录授权</button>
             </div>
-
             <div id="admin-panel" class="space-y-6 hidden text-sm">
                 <div class="flex justify-between items-center bg-slate-800 p-3 rounded">
                     <span id="admin-user-tips" class="text-emerald-400 font-bold">已成功授权管理员：934750742@qq.com</span>
@@ -258,13 +249,11 @@
                             <option value="会员区（会员使用积分兑换）">会员区（会员使用积分兑换）</option>
                         </select>
                     </div>
-
                     <!-- 销售渠道输入框 -->
                     <div>
                         <label class="block text-xs text-slate-400 mb-1">销售渠道 / 地点</label>
                         <input type="text" id="add-goods-channel" value="湘江港地下商业街右侧头铺最底层" placeholder="例如：湘江港地下商业街右侧头铺最底层" class="w-full p-2 bg-slate-800 border border-slate-700 rounded text-slate-200 outline-none">
                     </div>
-
                     <input type="text" id="add-goods-title" placeholder="商品名称" class="w-full p-2 bg-slate-800 border border-slate-700 rounded">
                     <input type="text" id="add-goods-price" placeholder="报价" class="w-full p-2 bg-slate-800 border border-slate-700 rounded">
                     <input type="file" id="add-goods-file" accept="image/*" class="w-full p-1 bg-slate-800 border border-slate-700 rounded text-xs text-slate-300">
@@ -274,7 +263,6 @@
             </div>
         </div>
     </div>
-
     <script>
         const SUPABASE_URL = "https://tearkjsdbiocboagemzi.supabase.co";
         const SUPABASE_KEY = "sb_publishable_WLrBvOWSwPl1Gx61Pc7dvw_piozm9my";
@@ -283,7 +271,6 @@
         let dbClient = null, currentUser = null;
         let goodsData = [], ordersData = [], sellData = [], teamsData = [];
         let currentGoodsCategory = 'all';
-
         function escapeHtml(str) {
             if (!str) return '';
             return String(str)
@@ -293,7 +280,6 @@
                 .replace(/"/g, "&quot;")
                 .replace(/'/g, "&#039;");
         }
-
         function initSupabase() {
             if (window.supabase) {
                 dbClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -304,7 +290,6 @@
             }
         }
         window.addEventListener('DOMContentLoaded', initSupabase);
-
         async function checkUserStatus() {
             const { data: { session } } = await dbClient.auth.getSession();
             const user = session?.user || null;
@@ -320,7 +305,6 @@
             }
             renderGoods(); renderOrders(); renderSells(); renderTeams();
         }
-
         async function loginAdminAuth() {
             const email = document.getElementById('admin-email-input').value.trim();
             const password = document.getElementById('admin-pass-input').value;
@@ -333,7 +317,6 @@
             await checkUserStatus();
             alert("登录成功！已成功安全获得管理员权限。");
         }
-
         async function logoutAdminAuth() {
             await dbClient.auth.signOut();
             currentUser = null;
@@ -341,7 +324,6 @@
             closeAdminModal();
             location.reload();
         }
-
         function switchTab(tab) {
             ['goods', 'order', 'sell', 'team', 'vip'].forEach(t => {
                 document.getElementById(`tab-${t}`)?.classList.add('hidden');
@@ -364,7 +346,6 @@
                 }
             }
         }
-
         // 商品分类筛选逻辑
         function filterCategory(cat) {
             currentGoodsCategory = cat;
@@ -383,12 +364,10 @@
             });
             renderGoods();
         }
-
         async function loadGoods() {
             const { data } = await dbClient.from('goods').select('*').order('id', { ascending: false });
             goodsData = data || []; renderGoods();
         }
-
         function renderGoods() {
             const container = document.getElementById('goods-list');
             const keyword = document.getElementById('search-input')?.value.trim().toLowerCase() || '';
@@ -399,7 +378,6 @@
                 const matchCategory = (currentGoodsCategory === 'all') || (gCategory === currentGoodsCategory);
                 return matchKeyword && matchCategory;
             });
-
             if (!filtered.length) return container.innerHTML = `<p class="col-span-full text-center text-slate-500 py-8">该分类下暂无商品</p>`;
             
             container.innerHTML = filtered.map(g => {
@@ -420,7 +398,6 @@
                             <span>📍 渠道：</span>
                             <span class="font-medium truncate" title="${escapeHtml(channelText)}">${escapeHtml(channelText)}</span>
                         </div>
-
                         <p class="text-xs text-slate-400 line-clamp-2">${escapeHtml(g.description || '暂无描述')}</p>
                     </div>
                     <div class="p-4 border-t border-slate-700/50 flex justify-between items-center bg-slate-900/30">
@@ -431,7 +408,6 @@
                 `;
             }).join('');
         }
-
         async function handleAddGoods() {
             if (!currentUser) return alert("只有管理员可添加商品");
             const category = document.getElementById('add-goods-category').value;
@@ -440,9 +416,7 @@
             const price = document.getElementById('add-goods-price').value.trim();
             const fileInput = document.getElementById('add-goods-file');
             const description = document.getElementById('add-goods-desc').value.trim();
-
             if (!title || !price) return alert("请填写完整的商品名称和报价！");
-
             let image_url = '';
             if (fileInput.files.length > 0) {
                 const file = fileInput.files[0];
@@ -457,12 +431,10 @@
                 alert('添加成功！'); loadGoods(); closeAdminModal();
             }
         }
-
         async function deleteGoods(id) {
             if (!currentUser) return alert("只有管理员才能删除！");
             if (confirm('确定删除商品？')) { await dbClient.from('goods').delete().eq('id', id); loadGoods(); }
         }
-
         // --- 采购看板 ---
         async function loadOrders() {
             const { data } = await dbClient.from('orders').select('*').order('id', { ascending: false });
@@ -534,7 +506,6 @@
             alert('提交成功！等待管理员审核放单。'); loadOrders();
             document.getElementById('order-form').reset();
         }
-
         // --- 出售意向 ---
         async function loadSells() {
             const { data } = await dbClient.from('sell_ideas').select('*').order('id', { ascending: false });
@@ -606,7 +577,6 @@
             alert('提交成功！等待管理员审核放单。'); loadSells();
             document.getElementById('sell-form').reset();
         }
-
         // --- 副本组队逻辑 ---
         async function loadTeams() {
             const { data, error } = await dbClient.from('teams').select('*').order('id', { ascending: false });
@@ -659,7 +629,6 @@
                 `;
             }).join('');
         }
-
         async function handleRemoveMember(teamId, memberIndex) {
             if (!confirm("确定移除该队员？")) return;
             const team = teamsData.find(t => t.id === teamId);
@@ -676,7 +645,6 @@
                 loadTeams();
             }
         }
-
         async function handleJoinTeam(teamId) {
             const playerInput = document.getElementById(`join-player-${teamId}`);
             const contactInput = document.getElementById(`join-contact-${teamId}`);
@@ -706,7 +674,6 @@
                 await loadTeams();
             }
         }
-
         async function handleCreateTeam(e) {
             e.preventDefault();
             const { error } = await dbClient.from('teams').insert([{ 
@@ -725,7 +692,6 @@
             document.getElementById('team-form').reset();
             await loadTeams();
         }
-
         async function deleteTeam(id) {
             if (!currentUser) return alert("仅管理员可删除整个组队帖！");
             if (confirm('确定删除该组队帖？')) {
@@ -733,7 +699,6 @@
                 loadTeams();
             }
         }
-
         function openAdminModal() { document.getElementById('admin-modal').classList.remove('hidden'); }
         function closeAdminModal() { document.getElementById('admin-modal').classList.add('hidden'); }
     </script>
