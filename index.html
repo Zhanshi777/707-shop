@@ -7,477 +7,432 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        body { 
-            background-color: #0f172a; 
-            color: #f8fafc; 
-            font-family: system-ui, -apple-system, sans-serif; 
-        }
-        
-        /* 卡片玻璃质感与高光发光边框 */
-        .mc-card { 
-            background: rgba(30, 41, 59, 0.8)[cite: 5]; 
-            backdrop-filter: blur(12px);
-            border: 1px solid #334155[cite: 5]; 
-            border-radius: 12px[cite: 5]; 
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        .mc-card:hover {
-            border-color: rgba(16, 185, 129, 0.4);
-            box-shadow: 0 10px 25px -5px rgba(16, 185, 129, 0.1);
-        }
-
-        /* 按钮悬浮及点击交互 */
-        .mc-btn { 
-            background-color: #10b981[cite: 5]; 
-            transition: all 0.2s[cite: 5]; 
-        }
-        .mc-btn:hover { 
-            background-color: #059669[cite: 5]; 
-        }
-
-        /* 自定义精细滚动条 */
-        ::-webkit-scrollbar { width: 6px; height: 6px; }
-        ::-webkit-scrollbar-track { background: rgba(15, 23, 42, 0.6); }
-        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: #10b981; }
-
-        /* 隐藏横向滚动条 */
-        .no-scrollbar::-webkit-scrollbar { display: none; }
-        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        body { background-color: #0f172a; color: #f8fafc; font-family: system-ui, -apple-system, sans-serif; }
+        .mc-card { background: rgba(30, 41, 59, 0.8); border: 1px solid #334155; border-radius: 12px; }
+        .mc-btn { background-color: #10b981; transition: all 0.2s; }
+        .mc-btn:hover { background-color: #059669; }
     </style>
 </head>
 <body class="min-h-screen flex flex-col">
-    <!-- 页头导航 -->
-    <header class="border-b border-slate-700 bg-slate-900/90 backdrop-blur sticky top-0 z-50">[cite: 5]
-        <div class="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">[cite: 5]
-            <div class="flex items-center space-x-3">[cite: 5]
-                <span class="text-lg md:text-2xl font-black text-emerald-400">707商店——励志成为SIMMC服务最好的商店</span>[cite: 5]
+    <header class="border-b border-slate-700 bg-slate-900/90 backdrop-blur sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <span class="text-lg md:text-2xl font-black text-emerald-400">707商店——励志成为SIMMC服务最好的商店</span>
             </div>
-            <nav class="flex space-x-1 md:space-x-3 text-xs md:text-sm font-medium overflow-x-auto no-scrollbar py-1">[cite: 5]
-                <button onclick="switchTab('goods')" id="nav-goods" class="px-2.5 py-1.5 rounded-lg text-emerald-400 bg-slate-800 font-bold whitespace-nowrap">商品大厅</button>[cite: 5]
-                <button onclick="switchTab('order')" id="nav-order" class="px-2.5 py-1.5 rounded-lg text-slate-300 hover:text-white whitespace-nowrap">我有采购需求</button>[cite: 5]
-                <button onclick="switchTab('sell')" id="nav-sell" class="px-2.5 py-1.5 rounded-lg text-slate-300 hover:text-white whitespace-nowrap">我有出售想法</button>[cite: 5]
-                <button onclick="switchTab('team')" id="nav-team" class="px-2.5 py-1.5 rounded-lg text-slate-300 hover:text-white whitespace-nowrap">副本组队</button>[cite: 5]
-                <button onclick="switchTab('vip')" id="nav-vip" class="px-2.5 py-1.5 rounded-lg text-amber-300 hover:text-amber-200 whitespace-nowrap">👑 凯尔希至尊会员</button>[cite: 5]
-                <button onclick="openAdminModal()" id="nav-admin" class="px-2.5 py-1.5 rounded-lg text-amber-400 border border-amber-500/30 hover:bg-amber-500/10 whitespace-nowrap">管理后台</button>[cite: 5]
+            <nav class="flex space-x-1 md:space-x-3 text-xs md:text-sm font-medium">
+                <button onclick="switchTab('goods')" id="nav-goods" class="px-2.5 py-1.5 rounded-lg text-emerald-400 bg-slate-800">商品大厅</button>
+                <button onclick="switchTab('order')" id="nav-order" class="px-2.5 py-1.5 rounded-lg text-slate-300 hover:text-white">我有采购需求</button>
+                <button onclick="switchTab('sell')" id="nav-sell" class="px-2.5 py-1.5 rounded-lg text-slate-300 hover:text-white">我有出售想法</button>
+                <button onclick="switchTab('team')" id="nav-team" class="px-2.5 py-1.5 rounded-lg text-slate-300 hover:text-white">副本组队</button>
+                <button onclick="switchTab('vip')" id="nav-vip" class="px-2.5 py-1.5 rounded-lg text-amber-300 hover:text-amber-200">👑 凯尔希至尊会员</button>
+                <button onclick="openAdminModal()" id="nav-admin" class="px-2.5 py-1.5 rounded-lg text-amber-400 border border-amber-500/30 hover:bg-amber-500/10">管理后台</button>
             </nav>
         </div>
     </header>
-
-    <!-- 主体区域 -->
-    <main class="flex-1 max-w-7xl w-full mx-auto p-4 md:p-6">[cite: 5]
+    <main class="flex-1 max-w-7xl w-full mx-auto p-4 md:p-6">
         
         <!-- 商品大厅 -->
-        <section id="tab-goods" class="space-y-6">[cite: 5]
-            <div class="flex flex-col md:flex-row justify-between items-center gap-4 bg-slate-800/50 p-4 rounded-xl border border-slate-700">[cite: 5]
+        <section id="tab-goods" class="space-y-6">
+            <div class="flex flex-col md:flex-row justify-between items-center gap-4 bg-slate-800/50 p-4 rounded-xl border border-slate-700">
                 <div>
-                    <h1 class="text-xl font-bold">707 商店在售物品</h1>[cite: 5]
-                    <p class="text-xs text-slate-400 mt-1">服务器选购指南 & 报价展示</p>[cite: 5]
+                    <h1 class="text-xl font-bold">707 商店在售物品</h1>
+                    <p class="text-xs text-slate-400 mt-1">服务器选购指南 & 报价展示</p>
                 </div>
-                <input type="text" id="search-input" oninput="renderGoods()" placeholder="搜索商品名称..." class="px-4 py-2 bg-slate-900 border border-slate-700 rounded-lg text-sm w-full md:w-64 focus:outline-none focus:border-emerald-500">[cite: 5]
+                <input type="text" id="search-input" oninput="renderGoods()" placeholder="搜索商品名称..." class="px-4 py-2 bg-slate-900 border border-slate-700 rounded-lg text-sm w-full md:w-64 focus:outline-none focus:border-emerald-500">
             </div>
             <!-- 商品分类切换按钮 -->
-            <div class="flex flex-wrap gap-2 border-b border-slate-700/80 pb-3">[cite: 5]
-                <button onclick="filterCategory('all')" id="cat-btn-all" class="px-3.5 py-1.5 rounded-lg text-xs font-bold bg-emerald-500 text-white transition-all">全部商品</button>[cite: 5]
-                <button onclick="filterCategory('地图画')" id="cat-btn-地图画" class="px-3.5 py-1.5 rounded-lg text-xs font-bold bg-slate-800 text-slate-300 hover:text-white transition-all">地图画</button>[cite: 5]
-                <button onclick="filterCategory('酒水')" id="cat-btn-酒水" class="px-3.5 py-1.5 rounded-lg text-xs font-bold bg-slate-800 text-slate-300 hover:text-white transition-all">酒水</button>[cite: 5]
-                <button onclick="filterCategory('会员区（会员使用积分兑换）')" id="cat-btn-会员区" class="px-3.5 py-1.5 rounded-lg text-xs font-bold bg-slate-800 text-slate-300 hover:text-white transition-all">会员区（积分兑换）</button>[cite: 5]
+            <div class="flex flex-wrap gap-2 border-b border-slate-700/80 pb-3">
+                <button onclick="filterCategory('all')" id="cat-btn-all" class="px-3.5 py-1.5 rounded-lg text-xs font-bold bg-emerald-500 text-white transition-all">全部商品</button>
+                <button onclick="filterCategory('地图画')" id="cat-btn-地图画" class="px-3.5 py-1.5 rounded-lg text-xs font-bold bg-slate-800 text-slate-300 hover:text-white transition-all">地图画</button>
+                <button onclick="filterCategory('酒水')" id="cat-btn-酒水" class="px-3.5 py-1.5 rounded-lg text-xs font-bold bg-slate-800 text-slate-300 hover:text-white transition-all">酒水</button>
+                <button onclick="filterCategory('会员区（会员使用积分兑换）')" id="cat-btn-会员区" class="px-3.5 py-1.5 rounded-lg text-xs font-bold bg-slate-800 text-slate-300 hover:text-white transition-all">会员区（积分兑换）</button>
             </div>
-            <div id="goods-list" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"></div>[cite: 5]
+            <div id="goods-list" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"></div>
         </section>
-
         <!-- 采购需求 -->
-        <section id="tab-order" class="space-y-6 hidden">[cite: 5]
-            <div class="grid md:grid-cols-3 gap-6">[cite: 5]
-                <div class="mc-card p-5 h-fit space-y-4">[cite: 5]
-                    <h2 class="text-lg font-bold text-emerald-400 border-b border-slate-700 pb-2">提交采购需求</h2>[cite: 5]
-                    <form id="order-form" onsubmit="handleCreateOrder(event)" class="space-y-3 text-sm">[cite: 5]
+        <section id="tab-order" class="space-y-6 hidden">
+            <div class="grid md:grid-cols-3 gap-6">
+                <div class="mc-card p-5 h-fit space-y-4">
+                    <h2 class="text-lg font-bold text-emerald-400 border-b border-slate-700 pb-2">提交采购需求</h2>
+                    <form id="order-form" onsubmit="handleCreateOrder(event)" class="space-y-3 text-sm">
                         <div>
-                            <label class="block text-xs text-slate-400 mb-1">玩家 ID (Game ID)</label>[cite: 5]
-                            <input type="text" id="order-player" required class="w-full p-2 bg-slate-900 border border-slate-700 rounded focus:border-emerald-500 outline-none">[cite: 5]
+                            <label class="block text-xs text-slate-400 mb-1">玩家 ID (Game ID)</label>
+                            <input type="text" id="order-player" required class="w-full p-2 bg-slate-900 border border-slate-700 rounded focus:border-emerald-500 outline-none">
                         </div>
                         <div>
-                            <label class="block text-xs text-slate-400 mb-1">需求商品及数量</label>[cite: 5]
-                            <textarea id="order-items" required placeholder="例如：钻石 x64，下界合金锭 x10" class="w-full p-2 bg-slate-900 border border-slate-700 rounded focus:border-emerald-500 outline-none h-20"></textarea>[cite: 5]
+                            <label class="block text-xs text-slate-400 mb-1">需求商品及数量</label>
+                            <textarea id="order-items" required placeholder="例如：钻石 x64，下界合金锭 x10" class="w-full p-2 bg-slate-900 border border-slate-700 rounded focus:border-emerald-500 outline-none h-20"></textarea>
                         </div>
                         <div>
-                            <label class="block text-xs text-slate-400 mb-1">联系 QQ</label>[cite: 5]
-                            <input type="text" id="order-contact" required class="w-full p-2 bg-slate-900 border border-slate-700 rounded focus:border-emerald-500 outline-none">[cite: 5]
+                            <label class="block text-xs text-slate-400 mb-1">联系 QQ</label>
+                            <input type="text" id="order-contact" required class="w-full p-2 bg-slate-900 border border-slate-700 rounded focus:border-emerald-500 outline-none">
                         </div>
                         <div>
-                            <label class="block text-xs text-slate-400 mb-1">备注信息 (可选)</label>[cite: 5]
-                            <input type="text" id="order-note" placeholder="例如：预期价格5万/预计晚上上线交割" class="w-full p-2 bg-slate-900 border border-slate-700 rounded focus:border-emerald-500 outline-none">[cite: 5]
+                            <label class="block text-xs text-slate-400 mb-1">备注信息 (可选)</label>
+                            <input type="text" id="order-note" placeholder="例如：预期价格5万/预计晚上上线交割" class="w-full p-2 bg-slate-900 border border-slate-700 rounded focus:border-emerald-500 outline-none">
                         </div>
-                        <button type="submit" class="w-full py-2 mc-btn text-white font-bold rounded">确认提交采购需求</button>[cite: 5]
+                        <button type="submit" class="w-full py-2 mc-btn text-white font-bold rounded">确认提交采购需求</button>
                     </form>
-                    <div class="bg-amber-950/40 border border-amber-600/40 p-3 rounded-lg text-amber-200/90 text-xs leading-relaxed flex items-start space-x-2">[cite: 5]
-                        <span class="text-base">💡</span>[cite: 5]
-                        <div><strong>提示：</strong>可在备注里输入预期价格/交货时间。请注意此价格仅为您的心理期望，最终定价权在于联系您的供应商/店主。</div>[cite: 5]
+                    <div class="bg-amber-950/40 border border-amber-600/40 p-3 rounded-lg text-amber-200/90 text-xs leading-relaxed flex items-start space-x-2">
+                        <span class="text-base">💡</span>
+                        <div><strong>提示：</strong>可在备注里输入预期价格/交货时间。请注意此价格仅为您的心理期望，最终定价权在于联系您的供应商/店主。</div>
                     </div>
                 </div>
-                <div class="md:col-span-2 mc-card p-5 space-y-4">[cite: 5]
-                    <h2 class="text-lg font-bold text-slate-200 border-b border-slate-700 pb-2">公共采购看板</h2>[cite: 5]
-                    <div id="orders-list" class="space-y-3 max-h-[600px] overflow-y-auto pr-1"></div>[cite: 5]
+                <div class="md:col-span-2 mc-card p-5 space-y-4">
+                    <h2 class="text-lg font-bold text-slate-200 border-b border-slate-700 pb-2">公共采购看板</h2>
+                    <div id="orders-list" class="space-y-3 max-h-[600px] overflow-y-auto pr-1"></div>
                 </div>
             </div>
         </section>
-
         <!-- 出售意向 -->
-        <section id="tab-sell" class="space-y-6 hidden">[cite: 5]
-            <div class="grid md:grid-cols-3 gap-6">[cite: 5]
-                <div class="mc-card p-5 h-fit space-y-4">[cite: 5]
-                    <h2 class="text-lg font-bold text-purple-400 border-b border-slate-700 pb-2">提交出售意向</h2>[cite: 5]
-                    <form id="sell-form" onsubmit="handleCreateSell(event)" class="space-y-3 text-sm">[cite: 5]
+        <section id="tab-sell" class="space-y-6 hidden">
+            <div class="grid md:grid-cols-3 gap-6">
+                <div class="mc-card p-5 h-fit space-y-4">
+                    <h2 class="text-lg font-bold text-purple-400 border-b border-slate-700 pb-2">提交出售意向</h2>
+                    <form id="sell-form" onsubmit="handleCreateSell(event)" class="space-y-3 text-sm">
                         <div>
-                            <label class="block text-xs text-slate-400 mb-1">玩家 ID (Game ID)</label>[cite: 5]
-                            <input type="text" id="sell-player" required class="w-full p-2 bg-slate-900 border border-slate-700 rounded focus:border-purple-500 outline-none">[cite: 5]
+                            <label class="block text-xs text-slate-400 mb-1">玩家 ID (Game ID)</label>
+                            <input type="text" id="sell-player" required class="w-full p-2 bg-slate-900 border border-slate-700 rounded focus:border-purple-500 outline-none">
                         </div>
                         <div>
-                            <label class="block text-xs text-slate-400 mb-1">拟出售物品及数量</label>[cite: 5]
-                            <textarea id="sell-items" required placeholder="例如：一桶石英块" class="w-full p-2 bg-slate-900 border border-slate-700 rounded focus:border-purple-500 outline-none h-20"></textarea>[cite: 5]
+                            <label class="block text-xs text-slate-400 mb-1">拟出售物品及数量</label>
+                            <textarea id="sell-items" required placeholder="例如：一桶石英块" class="w-full p-2 bg-slate-900 border border-slate-700 rounded focus:border-purple-500 outline-none h-20"></textarea>
                         </div>
                         <div>
-                            <label class="block text-xs text-slate-400 mb-1">联系 QQ</label>[cite: 5]
-                            <input type="text" id="sell-contact" required class="w-full p-2 bg-slate-900 border border-slate-700 rounded focus:border-purple-500 outline-none">[cite: 5]
+                            <label class="block text-xs text-slate-400 mb-1">联系 QQ</label>
+                            <input type="text" id="sell-contact" required class="w-full p-2 bg-slate-900 border border-slate-700 rounded focus:border-purple-500 outline-none">
                         </div>
                         <div>
-                            <label class="block text-xs text-slate-400 mb-1">备注信息 (可选)</label>[cite: 5]
-                            <input type="text" id="sell-note" placeholder="例如：可微调价格/打包优惠" class="w-full p-2 bg-slate-900 border border-slate-700 rounded focus:border-purple-500 outline-none">[cite: 5]
+                            <label class="block text-xs text-slate-400 mb-1">备注信息 (可选)</label>
+                            <input type="text" id="sell-note" placeholder="例如：可微调价格/打包优惠" class="w-full p-2 bg-slate-900 border border-slate-700 rounded focus:border-purple-500 outline-none">
                         </div>
-                        <button type="submit" class="w-full py-2 bg-purple-600 hover:bg-purple-500 text-white font-bold rounded">提交出售意向</button>[cite: 5]
+                        <button type="submit" class="w-full py-2 bg-purple-600 hover:bg-purple-500 text-white font-bold rounded">提交出售意向</button>
                     </form>
-                    <div class="bg-amber-950/40 border border-amber-600/40 p-3 rounded-lg text-amber-200/90 text-xs leading-relaxed flex items-start space-x-2">[cite: 5]
-                        <span class="text-base">💡</span>[cite: 5]
-                        <div><strong>提示：</strong>卖家提交的出售商品与 707 商店订单无冲突/影响时方可审核放单公示。</div>[cite: 5]
+                    <div class="bg-amber-950/40 border border-amber-600/40 p-3 rounded-lg text-amber-200/90 text-xs leading-relaxed flex items-start space-x-2">
+                        <span class="text-base">💡</span>
+                        <div><strong>提示：</strong>卖家提交的出售商品与 707 商店订单无冲突/影响时方可审核放单公示。</div>
                     </div>
                 </div>
-                <div class="md:col-span-2 mc-card p-5 space-y-4">[cite: 5]
-                    <h2 class="text-lg font-bold text-slate-200 border-b border-slate-700 pb-2">公共出售意向看板</h2>[cite: 5]
-                    <div id="sell-list" class="space-y-3 max-h-[600px] overflow-y-auto pr-1"></div>[cite: 5]
+                <div class="md:col-span-2 mc-card p-5 space-y-4">
+                    <h2 class="text-lg font-bold text-slate-200 border-b border-slate-700 pb-2">公共出售意向看板</h2>
+                    <div id="sell-list" class="space-y-3 max-h-[600px] overflow-y-auto pr-1"></div>
                 </div>
             </div>
         </section>
-
         <!-- 副本组队 -->
-        <section id="tab-team" class="space-y-6 hidden">[cite: 5]
-            <div class="grid md:grid-cols-3 gap-6">[cite: 5]
-                <div class="mc-card p-5 h-fit space-y-4">[cite: 5]
-                    <h2 class="text-lg font-bold text-sky-400 border-b border-slate-700 pb-2">发起副本组队</h2>[cite: 5]
-                    <form id="team-form" onsubmit="handleCreateTeam(event)" class="space-y-3 text-sm">[cite: 5]
+        <section id="tab-team" class="space-y-6 hidden">
+            <div class="grid md:grid-cols-3 gap-6">
+                <div class="mc-card p-5 h-fit space-y-4">
+                    <h2 class="text-lg font-bold text-sky-400 border-b border-slate-700 pb-2">发起副本组队</h2>
+                    <form id="team-form" onsubmit="handleCreateTeam(event)" class="space-y-3 text-sm">
                         <div>
-                            <label class="block text-xs text-slate-400 mb-1">副本名称</label>[cite: 5]
-                            <input type="text" id="team-dungeon" placeholder="例如：末地远征" required class="w-full p-2 bg-slate-900 border border-slate-700 rounded focus:border-sky-500 outline-none">[cite: 5]
+                            <label class="block text-xs text-slate-400 mb-1">副本名称</label>
+                            <input type="text" id="team-dungeon" placeholder="例如：末地远征" required class="w-full p-2 bg-slate-900 border border-slate-700 rounded focus:border-sky-500 outline-none">
                         </div>
                         <div>
-                            <label class="block text-xs text-slate-400 mb-1">队长 ID</label>[cite: 5]
-                            <input type="text" id="team-leader" required class="w-full p-2 bg-slate-900 border border-slate-700 rounded focus:border-sky-500 outline-none">[cite: 5]
+                            <label class="block text-xs text-slate-400 mb-1">队长 ID</label>
+                            <input type="text" id="team-leader" required class="w-full p-2 bg-slate-900 border border-slate-700 rounded focus:border-sky-500 outline-none">
                         </div>
                         <div>
-                            <label class="block text-xs text-slate-400 mb-1">联系 QQ</label>[cite: 5]
-                            <input type="text" id="team-qq" required class="w-full p-2 bg-slate-900 border border-slate-700 rounded focus:border-sky-500 outline-none">[cite: 5]
+                            <label class="block text-xs text-slate-400 mb-1">联系 QQ</label>
+                            <input type="text" id="team-qq" required class="w-full p-2 bg-slate-900 border border-slate-700 rounded focus:border-sky-500 outline-none">
                         </div>
                         <div>
-                            <label class="block text-xs text-slate-400 mb-1">预计开组/发车时间</label>[cite: 5]
-                            <input type="text" id="team-play-time" placeholder="例如：今晚 20:00" required class="w-full p-2 bg-slate-900 border border-slate-700 rounded focus:border-sky-500 outline-none">[cite: 5]
+                            <label class="block text-xs text-slate-400 mb-1">预计开组/发车时间</label>
+                            <input type="text" id="team-play-time" placeholder="例如：今晚 20:00" required class="w-full p-2 bg-slate-900 border border-slate-700 rounded focus:border-sky-500 outline-none">
                         </div>
                         <div>
-                            <label class="block text-xs text-slate-400 mb-1">队伍需求 / 人数</label>[cite: 5]
-                            <input type="text" id="team-need" placeholder="例如：缺2个打手" required class="w-full p-2 bg-slate-900 border border-slate-700 rounded focus:border-sky-500 outline-none">[cite: 5]
+                            <label class="block text-xs text-slate-400 mb-1">队伍需求 / 人数</label>
+                            <input type="text" id="team-need" placeholder="例如：缺2个打手" required class="w-full p-2 bg-slate-900 border border-slate-700 rounded focus:border-sky-500 outline-none">
                         </div>
-                        <button type="submit" class="w-full py-2 bg-sky-600 hover:bg-sky-500 text-white font-bold rounded">发布招募</button>[cite: 5]
+                        <button type="submit" class="w-full py-2 bg-sky-600 hover:bg-sky-500 text-white font-bold rounded">发布招募</button>
                     </form>
                 </div>
-                <div class="md:col-span-2 space-y-4">[cite: 5]
-                    <h2 class="text-lg font-bold text-slate-200">当前组队帖子</h2>[cite: 5]
-                    <div id="teams-list" class="space-y-4"></div>[cite: 5]
+                <div class="md:col-span-2 space-y-4">
+                    <h2 class="text-lg font-bold text-slate-200">当前组队帖子</h2>
+                    <div id="teams-list" class="space-y-4"></div>
                 </div>
             </div>
         </section>
         
         <!-- 凯尔希至尊会员专区 -->
-        <section id="tab-vip" class="space-y-6 hidden">[cite: 5]
-            <div class="mc-card p-6 border border-amber-500/30 bg-gradient-to-br from-slate-900 via-slate-800 to-amber-950/20 rounded-2xl shadow-xl space-y-6">[cite: 5]
-                <div class="flex flex-col md:flex-row items-center justify-between border-b border-amber-500/20 pb-6 gap-4">[cite: 5]
-                    <div class="space-y-2 text-center md:text-left">[cite: 5]
-                        <div class="inline-flex items-center space-x-2 bg-amber-500/10 border border-amber-500/30 px-3 py-1 rounded-full text-xs text-amber-300 font-semibold">[cite: 5]
-                            <span>✨ 707 商店尊享礼遇</span>[cite: 5]
+        <section id="tab-vip" class="space-y-6 hidden">
+            <div class="mc-card p-6 border border-amber-500/30 bg-gradient-to-br from-slate-900 via-slate-800 to-amber-950/20 rounded-2xl shadow-xl space-y-6">
+                <div class="flex flex-col md:flex-row items-center justify-between border-b border-amber-500/20 pb-6 gap-4">
+                    <div class="space-y-2 text-center md:text-left">
+                        <div class="inline-flex items-center space-x-2 bg-amber-500/10 border border-amber-500/30 px-3 py-1 rounded-full text-xs text-amber-300 font-semibold">
+                            <span>✨ 707 商店尊享礼遇</span>
                         </div>
-                        <h1 class="text-2xl md:text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-amber-200 via-amber-400 to-yellow-500">[cite: 5]
-                            凯尔希至尊会员专区（公示大厅）[cite: 5]
+                        <h1 class="text-2xl md:text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-amber-200 via-amber-400 to-yellow-500">
+                            凯尔希至尊会员专区（公示大厅）
                         </h1>
-                        <p class="text-sm text-slate-400 max-w-xl">[cite: 5]
-                            访客当前为安全浏览权限 (RSL)。以下为官方认证至尊会员的实时公示信息、海报、余额与积分展示。[cite: 5]
+                        <p class="text-sm text-slate-400 max-w-xl">
+                            访客当前为安全浏览权限 (RSL)。以下为官方认证至尊会员的实时公示信息、海报、余额与积分展示。
                         </p>
                     </div>
-                    <div class="bg-amber-500/10 p-4 rounded-xl border border-amber-500/20 text-center min-w-[180px]">[cite: 5]
-                        <span class="text-3xl">💎</span>[cite: 5]
-                        <div class="text-xs text-amber-300 font-bold mt-1">至尊 VIP 专属公示</div>[cite: 5]
+                    <div class="bg-amber-500/10 p-4 rounded-xl border border-amber-500/20 text-center min-w-[180px]">
+                        <span class="text-3xl">💎</span>
+                        <div class="text-xs text-amber-300 font-bold mt-1">至尊 VIP 专属公示</div>
                     </div>
                 </div>
+
                 <!-- 管理员专属添加按钮栏 -->
-                <div id="vip-admin-bar" class="hidden flex justify-end">[cite: 5]
-                    <button onclick="openVipModal()" class="px-4 py-2 bg-amber-600 hover:bg-amber-500 text-white font-bold rounded-lg text-sm shadow">[cite: 5]
-                        ➕ 添加新会员公示[cite: 5]
+                <div id="vip-admin-bar" class="hidden flex justify-end">
+                    <button onclick="openVipModal()" class="px-4 py-2 bg-amber-600 hover:bg-amber-500 text-white font-bold rounded-lg text-sm shadow">
+                        ➕ 添加新会员公示
                     </button>
                 </div>
+
                 <!-- 会员卡片公示列表展示网格 -->
-                <div id="vip-members-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">[cite: 5]
+                <div id="vip-members-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     <!-- 动态加载 -->
                 </div>
             </div>
         </section>
     </main>
-
-    <!-- 页脚 -->
-    <footer class="mt-8 border-t border-emerald-500/30 bg-slate-900/90 py-6 text-center shadow-lg">[cite: 5]
-        <h2 class="text-2xl md:text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-teal-200 to-emerald-400">[cite: 5]
-            你有需求，我来满足，加Q群 1082325695 / 1014137105[cite: 5]
+    <footer class="mt-8 border-t border-emerald-500/30 bg-slate-900/90 py-6 text-center shadow-lg">
+        <h2 class="text-2xl md:text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-teal-200 to-emerald-400">
+            你有需求，我来满足，加Q群 1082325695 / 1014137105
         </h2>
     </footer>
 
     <!-- 新增/修改会员公示弹窗（仅管理员） -->
-    <div id="vip-modal" class="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 z-50 hidden">[cite: 5]
-        <div class="mc-card max-w-lg w-full p-6 space-y-4 max-h-[90vh] overflow-y-auto">[cite: 5]
-            <div class="flex justify-between items-center border-b border-slate-700 pb-2">[cite: 5]
-                <h3 id="vip-modal-title" class="font-bold text-amber-400 text-lg">添加会员公示</h3>[cite: 5]
-                <button onclick="closeVipModal()" class="text-slate-400 hover:text-white">✕</button>[cite: 5]
+    <div id="vip-modal" class="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 z-50 hidden">
+        <div class="mc-card max-w-lg w-full p-6 space-y-4 max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center border-b border-slate-700 pb-2">
+                <h3 id="vip-modal-title" class="font-bold text-amber-400 text-lg">添加会员公示</h3>
+                <button onclick="closeVipModal()" class="text-slate-400 hover:text-white">✕</button>
             </div>
-            <input type="hidden" id="edit-vip-id">[cite: 5]
-            <div class="space-y-3 text-sm">[cite: 5]
+            <input type="hidden" id="edit-vip-id">
+            <div class="space-y-3 text-sm">
                 <div>
-                    <label class="block text-xs text-slate-400 mb-1">会员名称 / 游戏 ID</label>[cite: 5]
-                    <input type="text" id="vip-name" class="w-full p-2 bg-slate-800 border border-slate-700 rounded outline-none" placeholder="例如：凯尔希Official">[cite: 5]
+                    <label class="block text-xs text-slate-400 mb-1">会员名称 / 游戏 ID</label>
+                    <input type="text" id="vip-name" class="w-full p-2 bg-slate-800 border border-slate-700 rounded outline-none" placeholder="例如：凯尔希Official">
                 </div>
                 <div>
-                    <label class="block text-xs text-slate-400 mb-1">会员等级</label>[cite: 5]
-                    <input type="text" id="vip-level" class="w-full p-2 bg-slate-800 border border-slate-700 rounded outline-none" value="至尊VIP">[cite: 5]
+                    <label class="block text-xs text-slate-400 mb-1">会员等级</label>
+                    <input type="text" id="vip-level" class="w-full p-2 bg-slate-800 border border-slate-700 rounded outline-none" value="至尊VIP">
                 </div>
                 <div>
-                    <label class="block text-xs text-slate-400 mb-1">账户余额</label>[cite: 5]
-                    <input type="text" id="vip-balance" class="w-full p-2 bg-slate-800 border border-slate-700 rounded outline-none" placeholder="例如：1,250,000 游戏币">[cite: 5]
+                    <label class="block text-xs text-slate-400 mb-1">账户余额</label>
+                    <input type="text" id="vip-balance" class="w-full p-2 bg-slate-800 border border-slate-700 rounded outline-none" placeholder="例如：1,250,000 游戏币">
                 </div>
                 <div>
-                    <label class="block text-xs text-slate-400 mb-1">当前积分</label>[cite: 5]
-                    <input type="number" id="vip-points" class="w-full p-2 bg-slate-800 border border-slate-700 rounded outline-none" value="0">[cite: 5]
+                    <label class="block text-xs text-slate-400 mb-1">当前积分</label>
+                    <input type="number" id="vip-points" class="w-full p-2 bg-slate-800 border border-slate-700 rounded outline-none" value="0">
                 </div>
                 <div>
-                    <label class="block text-xs text-slate-400 mb-1">会员海报图片 (上传新海报或留空)</label>[cite: 5]
-                    <input type="file" id="vip-file" accept="image/*" class="w-full p-1 bg-slate-800 border border-slate-700 rounded text-xs text-slate-300">[cite: 5]
+                    <label class="block text-xs text-slate-400 mb-1">会员海报图片 (上传新海报或留空)</label>
+                    <input type="file" id="vip-file" accept="image/*" class="w-full p-1 bg-slate-800 border border-slate-700 rounded text-xs text-slate-300">
                 </div>
                 <div>
-                    <label class="block text-xs text-slate-400 mb-1">备注说明 / 特权简介</label>[cite: 5]
-                    <textarea id="vip-desc" class="w-full p-2 bg-slate-800 border border-slate-700 rounded outline-none h-20" placeholder="例如：享全场95折，拥有湘江港专属传送特权"></textarea>[cite: 5]
+                    <label class="block text-xs text-slate-400 mb-1">备注说明 / 特权简介</label>
+                    <textarea id="vip-desc" class="w-full p-2 bg-slate-800 border border-slate-700 rounded outline-none h-20" placeholder="例如：享全场95折，拥有湘江港专属传送特权"></textarea>
                 </div>
-                <button onclick="handleSaveVip()" class="w-full py-2 bg-amber-600 hover:bg-amber-500 font-bold rounded text-white">确认保存会员公示</button>[cite: 5]
+                <button onclick="handleSaveVip()" class="w-full py-2 bg-amber-600 hover:bg-amber-500 font-bold rounded text-white">确认保存会员公示</button>
             </div>
         </div>
     </div>
 
     <!-- 修改商品弹窗（仅管理员可见可操作） -->
-    <div id="edit-goods-modal" class="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 z-50 hidden">[cite: 5]
-        <div class="mc-card max-w-lg w-full p-6 space-y-4 max-h-[90vh] overflow-y-auto">[cite: 5]
-            <div class="flex justify-between items-center border-b border-slate-700 pb-2">[cite: 5]
-                <h3 class="font-bold text-amber-400 text-lg">修改商品信息</h3>[cite: 5]
-                <button onclick="closeEditGoodsModal()" class="text-slate-400 hover:text-white">✕</button>[cite: 5]
+    <div id="edit-goods-modal" class="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 z-50 hidden">
+        <div class="mc-card max-w-lg w-full p-6 space-y-4 max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center border-b border-slate-700 pb-2">
+                <h3 class="font-bold text-amber-400 text-lg">修改商品信息</h3>
+                <button onclick="closeEditGoodsModal()" class="text-slate-400 hover:text-white">✕</button>
             </div>
-            <input type="hidden" id="edit-goods-id">[cite: 5]
-            <div class="space-y-3 text-sm">[cite: 5]
+            <input type="hidden" id="edit-goods-id">
+            <div class="space-y-3 text-sm">
                 <div>
-                    <label class="block text-xs text-slate-400 mb-1">商品类别</label>[cite: 5]
-                    <select id="edit-goods-category" class="w-full p-2 bg-slate-800 border border-slate-700 rounded text-slate-200 outline-none">[cite: 5]
-                        <option value="地图画">地图画</option>[cite: 5]
-                        <option value="酒水">酒水</option>[cite: 5]
-                        <option value="会员区（会员使用积分兑换）">会员区（会员使用积分兑换）</option>[cite: 5]
+                    <label class="block text-xs text-slate-400 mb-1">商品类别</label>
+                    <select id="edit-goods-category" class="w-full p-2 bg-slate-800 border border-slate-700 rounded text-slate-200 outline-none">
+                        <option value="地图画">地图画</option>
+                        <option value="酒水">酒水</option>
+                        <option value="会员区（会员使用积分兑换）">会员区（会员使用积分兑换）</option>
                     </select>
                 </div>
                 <div>
-                    <label class="block text-xs text-slate-400 mb-1">销售渠道 / 地点</label>[cite: 5]
-                    <input type="text" id="edit-goods-channel" class="w-full p-2 bg-slate-800 border border-slate-700 rounded text-slate-200 outline-none">[cite: 5]
+                    <label class="block text-xs text-slate-400 mb-1">销售渠道 / 地点</label>
+                    <input type="text" id="edit-goods-channel" class="w-full p-2 bg-slate-800 border border-slate-700 rounded text-slate-200 outline-none">
                 </div>
                 <div>
-                    <label class="block text-xs text-slate-400 mb-1">商品名称</label>[cite: 5]
-                    <input type="text" id="edit-goods-title" class="w-full p-2 bg-slate-800 border border-slate-700 rounded outline-none">[cite: 5]
+                    <label class="block text-xs text-slate-400 mb-1">商品名称</label>
+                    <input type="text" id="edit-goods-title" class="w-full p-2 bg-slate-800 border border-slate-700 rounded outline-none">
                 </div>
                 <div>
-                    <label class="block text-xs text-slate-400 mb-1">报价</label>[cite: 5]
-                    <input type="text" id="edit-goods-price" class="w-full p-2 bg-slate-800 border border-slate-700 rounded outline-none">[cite: 5]
+                    <label class="block text-xs text-slate-400 mb-1">报价</label>
+                    <input type="text" id="edit-goods-price" class="w-full p-2 bg-slate-800 border border-slate-700 rounded outline-none">
                 </div>
                 <div>
-                    <label class="block text-xs text-slate-400 mb-1">更换图片 (可选，留空保留原图片)</label>[cite: 5]
-                    <input type="file" id="edit-goods-file" accept="image/*" class="w-full p-1 bg-slate-800 border border-slate-700 rounded text-xs text-slate-300">[cite: 5]
+                    <label class="block text-xs text-slate-400 mb-1">更换图片 (可选，留空保留原图片)</label>
+                    <input type="file" id="edit-goods-file" accept="image/*" class="w-full p-1 bg-slate-800 border border-slate-700 rounded text-xs text-slate-300">
                 </div>
                 <div>
-                    <label class="block text-xs text-slate-400 mb-1">商品说明</label>[cite: 5]
-                    <textarea id="edit-goods-desc" class="w-full p-2 bg-slate-800 border border-slate-700 rounded outline-none h-20"></textarea>[cite: 5]
+                    <label class="block text-xs text-slate-400 mb-1">商品说明</label>
+                    <textarea id="edit-goods-desc" class="w-full p-2 bg-slate-800 border border-slate-700 rounded outline-none h-20"></textarea>
                 </div>
-                <button onclick="handleSaveEditGoods()" class="w-full py-2 bg-amber-600 hover:bg-amber-500 font-bold rounded text-white">确认修改并保存</button>[cite: 5]
+                <button onclick="handleSaveEditGoods()" class="w-full py-2 bg-amber-600 hover:bg-amber-500 font-bold rounded text-white">确认修改并保存</button>
             </div>
         </div>
     </div>
-
     <!-- 管理员 Auth 登录弹窗 -->
-    <div id="admin-modal" class="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 z-50 hidden">[cite: 5]
-        <div class="mc-card max-w-xl w-full p-6 space-y-4 max-h-[90vh] overflow-y-auto">[cite: 5]
-            <div class="flex justify-between items-center border-b border-slate-700 pb-2">[cite: 5]
-                <h3 class="font-bold text-amber-400 text-lg">707 管理员官方登录</h3>[cite: 5]
-                <button onclick="closeAdminModal()" class="text-slate-400 hover:text-white">✕</button>[cite: 5]
+    <div id="admin-modal" class="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 z-50 hidden">
+        <div class="mc-card max-w-xl w-full p-6 space-y-4 max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center border-b border-slate-700 pb-2">
+                <h3 class="font-bold text-amber-400 text-lg">707 管理员官方登录</h3>
+                <button onclick="closeAdminModal()" class="text-slate-400 hover:text-white">✕</button>
             </div>
             
-            <div id="admin-login-box" class="space-y-3">[cite: 5]
+            <div id="admin-login-box" class="space-y-3">
                 <div>
-                    <label class="block text-xs text-slate-400 mb-1">管理员邮箱</label>[cite: 5]
-                    <input type="email" id="admin-email-input" placeholder="934750742@qq.com" class="w-full p-2 bg-slate-900 border border-slate-700 rounded outline-none">[cite: 5]
+                    <label class="block text-xs text-slate-400 mb-1">管理员邮箱</label>
+                    <input type="email" id="admin-email-input" placeholder="934750742@qq.com" class="w-full p-2 bg-slate-900 border border-slate-700 rounded outline-none">
                 </div>
                 <div>
-                    <label class="block text-xs text-slate-400 mb-1">密码</label>[cite: 5]
-                    <input type="password" id="admin-pass-input" placeholder="密码" class="w-full p-2 bg-slate-900 border border-slate-700 rounded outline-none">[cite: 5]
+                    <label class="block text-xs text-slate-400 mb-1">密码</label>
+                    <input type="password" id="admin-pass-input" placeholder="密码" class="w-full p-2 bg-slate-900 border border-slate-700 rounded outline-none">
                 </div>
-                <button onclick="loginAdminAuth()" class="w-full py-2 bg-amber-600 hover:bg-amber-500 font-bold rounded">登录授权</button>[cite: 5]
+                <button onclick="loginAdminAuth()" class="w-full py-2 bg-amber-600 hover:bg-amber-500 font-bold rounded">登录授权</button>
             </div>
-            <div id="admin-panel" class="space-y-6 hidden text-sm">[cite: 5]
-                <div class="flex justify-between items-center bg-slate-800 p-3 rounded">[cite: 5]
-                    <span id="admin-user-tips" class="text-emerald-400 font-bold">已成功授权管理员：934750742@qq.com</span>[cite: 5]
-                    <button onclick="logoutAdminAuth()" class="text-xs bg-rose-600 px-2 py-1 rounded">退出登录</button>[cite: 5]
+            <div id="admin-panel" class="space-y-6 hidden text-sm">
+                <div class="flex justify-between items-center bg-slate-800 p-3 rounded">
+                    <span id="admin-user-tips" class="text-emerald-400 font-bold">已成功授权管理员：934750742@qq.com</span>
+                    <button onclick="logoutAdminAuth()" class="text-xs bg-rose-600 px-2 py-1 rounded">退出登录</button>
                 </div>
-                <div class="bg-slate-900/60 p-4 rounded-lg border border-slate-700 space-y-3">[cite: 5]
-                    <h4 class="font-bold text-emerald-400">发布商品</h4>[cite: 5]
+                <div class="bg-slate-900/60 p-4 rounded-lg border border-slate-700 space-y-3">
+                    <h4 class="font-bold text-emerald-400">发布商品</h4>
                     
                     <!-- 分类选择框 -->
                     <div>
-                        <label class="block text-xs text-slate-400 mb-1">商品类别</label>[cite: 5]
-                        <select id="add-goods-category" class="w-full p-2 bg-slate-800 border border-slate-700 rounded text-slate-200 outline-none">[cite: 5]
-                            <option value="地图画">地图画</option>[cite: 5]
-                            <option value="酒水">酒水</option>[cite: 5]
-                            <option value="会员区（会员使用积分兑换）">会员区（会员使用积分兑换）</option>[cite: 5]
+                        <label class="block text-xs text-slate-400 mb-1">商品类别</label>
+                        <select id="add-goods-category" class="w-full p-2 bg-slate-800 border border-slate-700 rounded text-slate-200 outline-none">
+                            <option value="地图画">地图画</option>
+                            <option value="酒水">酒水</option>
+                            <option value="会员区（会员使用积分兑换）">会员区（会员使用积分兑换）</option>
                         </select>
                     </div>
                     <!-- 销售渠道输入框 -->
                     <div>
-                        <label class="block text-xs text-slate-400 mb-1">销售渠道 / 地点</label>[cite: 5]
-                        <input type="text" id="add-goods-channel" value="湘江港地下商业街右侧头铺最底层" placeholder="例如：湘江港地下商业街右侧头铺最底层" class="w-full p-2 bg-slate-800 border border-slate-700 rounded text-slate-200 outline-none">[cite: 5]
+                        <label class="block text-xs text-slate-400 mb-1">销售渠道 / 地点</label>
+                        <input type="text" id="add-goods-channel" value="湘江港地下商业街右侧头铺最底层" placeholder="例如：湘江港地下商业街右侧头铺最底层" class="w-full p-2 bg-slate-800 border border-slate-700 rounded text-slate-200 outline-none">
                     </div>
-                    <input type="text" id="add-goods-title" placeholder="商品名称" class="w-full p-2 bg-slate-800 border border-slate-700 rounded">[cite: 5]
-                    <input type="text" id="add-goods-price" placeholder="报价" class="w-full p-2 bg-slate-800 border border-slate-700 rounded">[cite: 5]
-                    <input type="file" id="add-goods-file" accept="image/*" class="w-full p-1 bg-slate-800 border border-slate-700 rounded text-xs text-slate-300">[cite: 5]
-                    <textarea id="add-goods-desc" placeholder="商品说明..." class="w-full p-2 bg-slate-800 border border-slate-700 rounded"></textarea>[cite: 5]
-                    <button onclick="handleAddGoods()" class="w-full py-2 bg-emerald-600 hover:bg-emerald-500 font-bold rounded">保存商品</button>[cite: 5]
+                    <input type="text" id="add-goods-title" placeholder="商品名称" class="w-full p-2 bg-slate-800 border border-slate-700 rounded">
+                    <input type="text" id="add-goods-price" placeholder="报价" class="w-full p-2 bg-slate-800 border border-slate-700 rounded">
+                    <input type="file" id="add-goods-file" accept="image/*" class="w-full p-1 bg-slate-800 border border-slate-700 rounded text-xs text-slate-300">
+                    <textarea id="add-goods-desc" placeholder="商品说明..." class="w-full p-2 bg-slate-800 border border-slate-700 rounded"></textarea>
+                    <button onclick="handleAddGoods()" class="w-full py-2 bg-emerald-600 hover:bg-emerald-500 font-bold rounded">保存商品</button>
                 </div>
             </div>
         </div>
     </div>
-
-    <!-- 数据库交互逻辑与控制脚本 -->
     <script>
-        const SUPABASE_URL = "https://tearkjsdbiocboagemzi.supabase.co";[cite: 5]
-        const SUPABASE_KEY = "sb_publishable_WLrBvOWSwPl1Gx61Pc7dvw_piozm9my";[cite: 5]
+        const SUPABASE_URL = "https://tearkjsdbiocboagemzi.supabase.co";
+        const SUPABASE_KEY = "sb_publishable_WLrBvOWSwPl1Gx61Pc7dvw_piozm9my";
         
-        const ADMIN_EMAIL = "934750742@qq.com";[cite: 5]
-        let dbClient = null, currentUser = null;[cite: 5]
-        let goodsData = [], ordersData = [], sellData = [], teamsData = [], vipData = [];[cite: 5]
-        let currentGoodsCategory = 'all';[cite: 5]
+        const ADMIN_EMAIL = "934750742@qq.com";
+        let dbClient = null, currentUser = null;
+        let goodsData = [], ordersData = [], sellData = [], teamsData = [], vipData = [];
+        let currentGoodsCategory = 'all';
 
-        function escapeHtml(str) {[cite: 5]
-            if (!str) return '';[cite: 5]
-            return String(str)[cite: 5]
-                .replace(/&/g, "&amp;")[cite: 5]
-                .replace(/</g, "&lt;")[cite: 5]
-                .replace(/>/g, "&gt;")[cite: 5]
-                .replace(/"/g, "&quot;")[cite: 5]
-                .replace(/'/g, "&#039;");[cite: 5]
+        function escapeHtml(str) {
+            if (!str) return '';
+            return String(str)
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
         }
-
-        function initSupabase() {[cite: 5]
-            if (window.supabase) {[cite: 5]
-                dbClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);[cite: 5]
-                checkUserStatus();[cite: 5]
-                loadGoods(); loadOrders(); loadSells(); loadTeams(); loadVipMembers();[cite: 5]
+        function initSupabase() {
+            if (window.supabase) {
+                dbClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+                checkUserStatus();
+                loadGoods(); loadOrders(); loadSells(); loadTeams(); loadVipMembers();
             } else {
-                setTimeout(initSupabase, 200);[cite: 5]
+                setTimeout(initSupabase, 200);
             }
         }
-        window.addEventListener('DOMContentLoaded', initSupabase);[cite: 5]
+        window.addEventListener('DOMContentLoaded', initSupabase);
 
-        async function checkUserStatus() {[cite: 5]
-            const { data: { session } } = await dbClient.auth.getSession();[cite: 5]
-            const user = session?.user || null;[cite: 5]
+        async function checkUserStatus() {
+            const { data: { session } } = await dbClient.auth.getSession();
+            const user = session?.user || null;
             
-            if (user && user.email === ADMIN_EMAIL) {[cite: 5]
-                currentUser = user;[cite: 5]
-                document.getElementById('admin-login-box')?.classList.add('hidden');[cite: 5]
-                document.getElementById('admin-panel')?.classList.remove('hidden');[cite: 5]
-                document.getElementById('vip-admin-bar')?.classList.remove('hidden');[cite: 5]
+            if (user && user.email === ADMIN_EMAIL) {
+                currentUser = user;
+                document.getElementById('admin-login-box')?.classList.add('hidden');
+                document.getElementById('admin-panel')?.classList.remove('hidden');
+                document.getElementById('vip-admin-bar')?.classList.remove('hidden');
             } else {
-                currentUser = null;[cite: 5]
-                document.getElementById('admin-login-box')?.classList.remove('hidden');[cite: 5]
-                document.getElementById('admin-panel')?.classList.add('hidden');[cite: 5]
-                document.getElementById('vip-admin-bar')?.classList.add('hidden');[cite: 5]
+                currentUser = null;
+                document.getElementById('admin-login-box')?.classList.remove('hidden');
+                document.getElementById('admin-panel')?.classList.add('hidden');
+                document.getElementById('vip-admin-bar')?.classList.add('hidden');
             }
-            renderGoods(); renderOrders(); renderSells(); renderTeams(); renderVipMembers();[cite: 5]
+            renderGoods(); renderOrders(); renderSells(); renderTeams(); renderVipMembers();
         }
-
-        async function loginAdminAuth() {[cite: 5]
-            const email = document.getElementById('admin-email-input').value.trim();[cite: 5]
-            const password = document.getElementById('admin-pass-input').value;[cite: 5]
-            if (email !== ADMIN_EMAIL) {[cite: 5]
-                return alert("该账号无管理员特权！");[cite: 5]
+        async function loginAdminAuth() {
+            const email = document.getElementById('admin-email-input').value.trim();
+            const password = document.getElementById('admin-pass-input').value;
+            if (email !== ADMIN_EMAIL) {
+                return alert("该账号无管理员特权！");
             }
-            const { data, error } = await dbClient.auth.signInWithPassword({ email, password });[cite: 5]
-            if (error) return alert("登录失败: " + error.message);[cite: 5]
+            const { data, error } = await dbClient.auth.signInWithPassword({ email, password });
+            if (error) return alert("登录失败: " + error.message);
             
-            await checkUserStatus();[cite: 5]
-            alert("登录成功！已成功安全获得管理员权限。");[cite: 5]
+            await checkUserStatus();
+            alert("登录成功！已成功安全获得管理员权限。");
         }
-
-        async function logoutAdminAuth() {[cite: 5]
-            await dbClient.auth.signOut();[cite: 5]
-            currentUser = null;[cite: 5]
-            alert("已退出登录");[cite: 5]
-            closeAdminModal();[cite: 5]
-            location.reload();[cite: 5]
+        async function logoutAdminAuth() {
+            await dbClient.auth.signOut();
+            currentUser = null;
+            alert("已退出登录");
+            closeAdminModal();
+            location.reload();
         }
-
-        function switchTab(tab) {[cite: 5]
-            ['goods', 'order', 'sell', 'team', 'vip'].forEach(t => {[cite: 5]
-                document.getElementById(`tab-${t}`)?.classList.add('hidden');[cite: 5]
-                const btn = document.getElementById(`nav-${t}`);[cite: 5]
-                if (btn) {[cite: 5]
-                    if (t === 'vip') {[cite: 5]
-                        btn.className = "px-2.5 py-1.5 rounded-lg text-amber-300 hover:text-amber-200 whitespace-nowrap";[cite: 5]
+        function switchTab(tab) {
+            ['goods', 'order', 'sell', 'team', 'vip'].forEach(t => {
+                document.getElementById(`tab-${t}`)?.classList.add('hidden');
+                const btn = document.getElementById(`nav-${t}`);
+                if (btn) {
+                    if (t === 'vip') {
+                        btn.className = "px-2.5 py-1.5 rounded-lg text-amber-300 hover:text-amber-200";
                     } else {
-                        btn.className = "px-2.5 py-1.5 rounded-lg text-slate-300 hover:text-white whitespace-nowrap";[cite: 5]
+                        btn.className = "px-2.5 py-1.5 rounded-lg text-slate-300 hover:text-white";
                     }
                 }
             });
-            document.getElementById(`tab-${tab}`)?.classList.remove('hidden');[cite: 5]
-            const activeBtn = document.getElementById(`nav-${tab}`);[cite: 5]
-            if (activeBtn) {[cite: 5]
-                if (tab === 'vip') {[cite: 5]
-                    activeBtn.className = "px-2.5 py-1.5 rounded-lg text-amber-300 font-bold bg-amber-500/20 border border-amber-500/40 whitespace-nowrap";[cite: 5]
+            document.getElementById(`tab-${tab}`)?.classList.remove('hidden');
+            const activeBtn = document.getElementById(`nav-${tab}`);
+            if (activeBtn) {
+                if (tab === 'vip') {
+                    activeBtn.className = "px-2.5 py-1.5 rounded-lg text-amber-300 font-bold bg-amber-500/20 border border-amber-500/40";
                 } else {
-                    activeBtn.className = "px-2.5 py-1.5 rounded-lg text-emerald-400 bg-slate-800 font-bold whitespace-nowrap";[cite: 5]
+                    activeBtn.className = "px-2.5 py-1.5 rounded-lg text-emerald-400 bg-slate-800 font-bold";
                 }
             }
         }
         
         // --- 凯尔希至尊会员专区逻辑 ---
-        async function loadVipMembers() {[cite: 5]
-            const { data, error } = await dbClient.from('vip_members').select('*').order('id', { ascending: false });[cite: 5]
-            if (error) {[cite: 5]
-                console.error("加载会员公示失败:", error);[cite: 5]
-                vipData = [];[cite: 5]
+        async function loadVipMembers() {
+            const { data, error } = await dbClient.from('vip_members').select('*').order('id', { ascending: false });
+            if (error) {
+                console.error("加载会员公示失败:", error);
+                vipData = [];
             } else {
-                vipData = data || [];[cite: 5]
+                vipData = data || [];
             }
-            renderVipMembers();[cite: 5]
+            renderVipMembers();
         }
 
-        function renderVipMembers() {[cite: 5]
-            const container = document.getElementById('vip-members-list');[cite: 5]
-            if (!container) return;[cite: 5]
-            if (!vipData.length) {[cite: 5]
-                container.innerHTML = `<p class="col-span-full text-center text-slate-500 py-8">暂无凯尔希至尊会员公示数据</p>`;[cite: 5]
-                return;[cite: 5]
+        function renderVipMembers() {
+            const container = document.getElementById('vip-members-list');
+            if (!container) return;
+            if (!vipData.length) {
+                container.innerHTML = `<p class="col-span-full text-center text-slate-500 py-8">暂无凯尔希至尊会员公示数据</p>`;
+                return;
             }
+
             container.innerHTML = vipData.map(v => `
                 <div class="mc-card overflow-hidden flex flex-col justify-between border border-amber-500/30">
                     <div class="relative h-48 bg-slate-900 flex items-center justify-center p-2">
@@ -501,130 +456,134 @@
                         </div>
                     ` : ''}
                 </div>
-            `).join('');[cite: 5]
+            `).join('');
         }
 
-        function openVipModal(id = null) {[cite: 5]
-            if (!currentUser) return alert("只有管理员可以操作！");[cite: 5]
-            document.getElementById('vip-modal').classList.remove('hidden');[cite: 5]
-            if (id) {[cite: 5]
-                const item = vipData.find(v => v.id === id);[cite: 5]
-                if (!item) return;[cite: 5]
-                document.getElementById('vip-modal-title').innerText = "修改会员公示信息";[cite: 5]
-                document.getElementById('edit-vip-id').value = item.id;[cite: 5]
-                document.getElementById('vip-name').value = item.name || '';[cite: 5]
-                document.getElementById('vip-level').value = item.level || '至尊VIP';[cite: 5]
-                document.getElementById('vip-balance').value = item.balance || '';[cite: 5]
-                document.getElementById('vip-points').value = item.points || 0;[cite: 5]
-                document.getElementById('vip-desc').value = item.description || '';[cite: 5]
-                document.getElementById('vip-file').value = '';[cite: 5]
+        function openVipModal(id = null) {
+            if (!currentUser) return alert("只有管理员可以操作！");
+            document.getElementById('vip-modal').classList.remove('hidden');
+            if (id) {
+                const item = vipData.find(v => v.id === id);
+                if (!item) return;
+                document.getElementById('vip-modal-title').innerText = "修改会员公示信息";
+                document.getElementById('edit-vip-id').value = item.id;
+                document.getElementById('vip-name').value = item.name || '';
+                document.getElementById('vip-level').value = item.level || '至尊VIP';
+                document.getElementById('vip-balance').value = item.balance || '';
+                document.getElementById('vip-points').value = item.points || 0;
+                document.getElementById('vip-desc').value = item.description || '';
+                document.getElementById('vip-file').value = '';
             } else {
-                document.getElementById('vip-modal-title').innerText = "添加会员公示";[cite: 5]
-                document.getElementById('edit-vip-id').value = '';[cite: 5]
-                document.getElementById('vip-name').value = '';[cite: 5]
-                document.getElementById('vip-level').value = '至尊VIP';[cite: 5]
-                document.getElementById('vip-balance').value = '';[cite: 5]
-                document.getElementById('vip-points').value = '0';[cite: 5]
-                document.getElementById('vip-desc').value = '';[cite: 5]
-                document.getElementById('vip-file').value = '';[cite: 5]
+                document.getElementById('vip-modal-title').innerText = "添加会员公示";
+                document.getElementById('edit-vip-id').value = '';
+                document.getElementById('vip-name').value = '';
+                document.getElementById('vip-level').value = '至尊VIP';
+                document.getElementById('vip-balance').value = '';
+                document.getElementById('vip-points').value = '0';
+                document.getElementById('vip-desc').value = '';
+                document.getElementById('vip-file').value = '';
             }
         }
 
-        function closeVipModal() {[cite: 5]
-            document.getElementById('vip-modal').classList.add('hidden');[cite: 5]
+        function closeVipModal() {
+            document.getElementById('vip-modal').classList.add('hidden');
         }
 
-        async function handleSaveVip() {[cite: 5]
-            if (!currentUser) return alert("只有管理员可以操作！");[cite: 5]
-            const id = document.getElementById('edit-vip-id').value;[cite: 5]
-            const name = document.getElementById('vip-name').value.trim();[cite: 5]
-            const level = document.getElementById('vip-level').value.trim();[cite: 5]
-            const balance = document.getElementById('vip-balance').value.trim();[cite: 5]
-            const points = parseInt(document.getElementById('vip-points').value) || 0;[cite: 5]
-            const description = document.getElementById('vip-desc').value.trim();[cite: 5]
-            const fileInput = document.getElementById('vip-file');[cite: 5]
-            if (!name) return alert("请填写会员名称/游戏 ID！");[cite: 5]
-            let poster_url = '';[cite: 5]
-            if (id) {[cite: 5]
-                const existing = vipData.find(v => v.id == id);[cite: 5]
-                if (existing) poster_url = existing.poster_url;[cite: 5]
+        async function handleSaveVip() {
+            if (!currentUser) return alert("只有管理员可以操作！");
+            const id = document.getElementById('edit-vip-id').value;
+            const name = document.getElementById('vip-name').value.trim();
+            const level = document.getElementById('vip-level').value.trim();
+            const balance = document.getElementById('vip-balance').value.trim();
+            const points = parseInt(document.getElementById('vip-points').value) || 0;
+            const description = document.getElementById('vip-desc').value.trim();
+            const fileInput = document.getElementById('vip-file');
+
+            if (!name) return alert("请填写会员名称/游戏 ID！");
+
+            let poster_url = '';
+            if (id) {
+                const existing = vipData.find(v => v.id == id);
+                if (existing) poster_url = existing.poster_url;
             }
-            if (fileInput.files.length > 0) {[cite: 5]
-                const file = fileInput.files[0];[cite: 5]
-                const fileName = `vip_${Date.now()}_${file.name}`;[cite: 5]
-                const { error: uploadErr } = await dbClient.storage.from('shop-images').upload(fileName, file);[cite: 5]
-                if (!uploadErr) {[cite: 5]
-                    poster_url = dbClient.storage.from('shop-images').getPublicUrl(fileName).data.publicUrl;[cite: 5]
+
+            if (fileInput.files.length > 0) {
+                const file = fileInput.files[0];
+                const fileName = `vip_${Date.now()}_${file.name}`;
+                const { error: uploadErr } = await dbClient.storage.from('shop-images').upload(fileName, file);
+                if (!uploadErr) {
+                    poster_url = dbClient.storage.from('shop-images').getPublicUrl(fileName).data.publicUrl;
                 } else {
-                    return alert("海报图片上传失败: " + uploadErr.message);[cite: 5]
+                    return alert("海报图片上传失败: " + uploadErr.message);
                 }
             }
-            const payload = { name, level, balance, points, poster_url, description };[cite: 5]
-            if (id) {[cite: 5]
-                const { error } = await dbClient.from('vip_members').update(payload).eq('id', id);[cite: 5]
-                if (error) return alert("修改失败：" + error.message);[cite: 5]
-                alert("会员公示修改成功！");[cite: 5]
+
+            const payload = { name, level, balance, points, poster_url, description };
+
+            if (id) {
+                const { error } = await dbClient.from('vip_members').update(payload).eq('id', id);
+                if (error) return alert("修改失败：" + error.message);
+                alert("会员公示修改成功！");
             } else {
-                const { error } = await dbClient.from('vip_members').insert([payload]);[cite: 5]
-                if (error) return alert("添加失败：" + error.message);[cite: 5]
-                alert("会员公示添加成功！");[cite: 5]
+                const { error } = await dbClient.from('vip_members').insert([payload]);
+                if (error) return alert("添加失败：" + error.message);
+                alert("会员公示添加成功！");
             }
-            closeVipModal();[cite: 5]
-            loadVipMembers();[cite: 5]
+
+            closeVipModal();
+            loadVipMembers();
         }
 
-        async function deleteVipMember(id) {[cite: 5]
-            if (!currentUser) return alert("只有管理员可以删除！");[cite: 5]
-            if (confirm("确定要删除这条会员公示吗？")) {[cite: 5]
-                const { error } = await dbClient.from('vip_members').delete().eq('id', id);[cite: 5]
-                if (error) alert("删除失败：" + error.message);[cite: 5]
-                else loadVipMembers();[cite: 5]
+        async function deleteVipMember(id) {
+            if (!currentUser) return alert("只有管理员可以删除！");
+            if (confirm("确定要删除这条会员公示吗？")) {
+                const { error } = await dbClient.from('vip_members').delete().eq('id', id);
+                if (error) alert("删除失败：" + error.message);
+                else loadVipMembers();
             }
         }
 
         // 商品分类筛选逻辑
-        function filterCategory(cat) {[cite: 5]
-            currentGoodsCategory = cat;[cite: 5]
-            const categoryKeys = ['all', '地图画', '酒水', '会员区（会员使用积分兑换）'];[cite: 5]
+        function filterCategory(cat) {
+            currentGoodsCategory = cat;
+            const categoryKeys = ['all', '地图画', '酒水', '会员区（会员使用积分兑换）'];
             
-            categoryKeys.forEach(k => {[cite: 5]
-                const btnKey = k.includes('会员区') ? '会员区' : k;[cite: 5]
-                const btn = document.getElementById(`cat-btn-${btnKey}`);[cite: 5]
-                if (btn) {[cite: 5]
-                    if (k === cat) {[cite: 5]
-                        btn.className = "px-3.5 py-1.5 rounded-lg text-xs font-bold bg-emerald-500 text-white transition-all";[cite: 5]
+            categoryKeys.forEach(k => {
+                const btnKey = k.includes('会员区') ? '会员区' : k;
+                const btn = document.getElementById(`cat-btn-${btnKey}`);
+                if (btn) {
+                    if (k === cat) {
+                        btn.className = "px-3.5 py-1.5 rounded-lg text-xs font-bold bg-emerald-500 text-white transition-all";
                     } else {
-                        btn.className = "px-3.5 py-1.5 rounded-lg text-xs font-bold bg-slate-800 text-slate-300 hover:text-white transition-all";[cite: 5]
+                        btn.className = "px-3.5 py-1.5 rounded-lg text-xs font-bold bg-slate-800 text-slate-300 hover:text-white transition-all";
                     }
                 }
             });
-            renderGoods();[cite: 5]
+            renderGoods();
         }
-
-        async function loadGoods() {[cite: 5]
-            let { data, error } = await dbClient.from('goods').select('*').order('sort_order', { ascending: true });[cite: 5]
-            if (error) {[cite: 5]
-                const fallback = await dbClient.from('goods').select('*').order('id', { ascending: false });[cite: 5]
-                data = fallback.data;[cite: 5]
+        async function loadGoods() {
+            let { data, error } = await dbClient.from('goods').select('*').order('sort_order', { ascending: true });
+            if (error) {
+                const fallback = await dbClient.from('goods').select('*').order('id', { ascending: false });
+                data = fallback.data;
             }
-            goodsData = data || [];[cite: 5]
-            renderGoods();[cite: 5]
+            goodsData = data || []; 
+            renderGoods();
         }
-
-        function renderGoods() {[cite: 5]
-            const container = document.getElementById('goods-list');[cite: 5]
-            const keyword = document.getElementById('search-input')?.value.trim().toLowerCase() || '';[cite: 5]
+        function renderGoods() {
+            const container = document.getElementById('goods-list');
+            const keyword = document.getElementById('search-input')?.value.trim().toLowerCase() || '';
             
-            const filtered = goodsData.filter(g => {[cite: 5]
-                const matchKeyword = (g.title || '').toLowerCase().includes(keyword);[cite: 5]
-                const gCategory = g.category || '地图画';[cite: 5]
-                const matchCategory = (currentGoodsCategory === 'all') || (gCategory === currentGoodsCategory);[cite: 5]
-                return matchKeyword && matchCategory;[cite: 5]
+            const filtered = goodsData.filter(g => {
+                const matchKeyword = (g.title || '').toLowerCase().includes(keyword);
+                const gCategory = g.category || '地图画';
+                const matchCategory = (currentGoodsCategory === 'all') || (gCategory === currentGoodsCategory);
+                return matchKeyword && matchCategory;
             });
-            if (!filtered.length) return container.innerHTML = `<p class="col-span-full text-center text-slate-500 py-8">该分类下暂无商品</p>`;[cite: 5]
+            if (!filtered.length) return container.innerHTML = `<p class="col-span-full text-center text-slate-500 py-8">该分类下暂无商品</p>`;
             
-            container.innerHTML = filtered.map((g, index) => {[cite: 5]
-                const channelText = g.sales_channel || '湘江港地下商业街右侧头铺最底层';[cite: 5]
+            container.innerHTML = filtered.map((g, index) => {
+                const channelText = g.sales_channel || '湘江港地下商业街右侧头铺最底层';
                 return `
                 <div class="mc-card overflow-hidden flex flex-col justify-between">
                     <div class="relative h-48 bg-slate-900 flex items-center justify-center p-2">
@@ -663,130 +622,122 @@
                     </div>
                 </div>
                 `;
-            }).join('');[cite: 5]
+            }).join('');
         }
-
-        async function handleAddGoods() {[cite: 5]
-            if (!currentUser) return alert("只有管理员可添加商品");[cite: 5]
-            const category = document.getElementById('add-goods-category').value;[cite: 5]
-            const sales_channel = document.getElementById('add-goods-channel').value.trim() || '湘江港地下商业街右侧头铺最底层';[cite: 5]
-            const title = document.getElementById('add-goods-title').value.trim();[cite: 5]
-            const price = document.getElementById('add-goods-price').value.trim();[cite: 5]
-            const fileInput = document.getElementById('add-goods-file');[cite: 5]
-            const description = document.getElementById('add-goods-desc').value.trim();[cite: 5]
-            if (!title || !price) return alert("请填写完整的商品名称和报价！");[cite: 5]
-            let image_url = '';[cite: 5]
-            if (fileInput.files.length > 0) {[cite: 5]
-                const file = fileInput.files[0];[cite: 5]
-                const fileName = `${Date.now()}_${file.name}`;[cite: 5]
-                await dbClient.storage.from('shop-images').upload(fileName, file);[cite: 5]
-                image_url = dbClient.storage.from('shop-images').getPublicUrl(fileName).data.publicUrl;[cite: 5]
+        async function handleAddGoods() {
+            if (!currentUser) return alert("只有管理员可添加商品");
+            const category = document.getElementById('add-goods-category').value;
+            const sales_channel = document.getElementById('add-goods-channel').value.trim() || '湘江港地下商业街右侧头铺最底层';
+            const title = document.getElementById('add-goods-title').value.trim();
+            const price = document.getElementById('add-goods-price').value.trim();
+            const fileInput = document.getElementById('add-goods-file');
+            const description = document.getElementById('add-goods-desc').value.trim();
+            if (!title || !price) return alert("请填写完整的商品名称和报价！");
+            let image_url = '';
+            if (fileInput.files.length > 0) {
+                const file = fileInput.files[0];
+                const fileName = `${Date.now()}_${file.name}`;
+                await dbClient.storage.from('shop-images').upload(fileName, file);
+                image_url = dbClient.storage.from('shop-images').getPublicUrl(fileName).data.publicUrl;
             }
-            const minOrder = goodsData.length > 0 ? Math.min(...goodsData.map(g => g.sort_order || 0)) - 1 : 1;[cite: 5]
-            const { error } = await dbClient.from('goods').insert([{ category, sales_channel, title, price, image_url, description, sort_order: minOrder }]);[cite: 5]
-            if (error) {[cite: 5]
-                alert("添加商品失败：" + error.message);[cite: 5]
+            const minOrder = goodsData.length > 0 ? Math.min(...goodsData.map(g => g.sort_order || 0)) - 1 : 1;
+            const { error } = await dbClient.from('goods').insert([{ category, sales_channel, title, price, image_url, description, sort_order: minOrder }]);
+            if (error) {
+                alert("添加商品失败：" + error.message);
             } else {
-                alert('添加成功！'); loadGoods(); closeAdminModal();[cite: 5]
+                alert('添加成功！'); loadGoods(); closeAdminModal();
             }
         }
-
-        function openEditGoodsModal(id) {[cite: 5]
-            if (!currentUser) return alert("只有管理员可以修改商品！");[cite: 5]
-            const item = goodsData.find(g => g.id === id);[cite: 5]
-            if (!item) return;[cite: 5]
-            document.getElementById('edit-goods-id').value = item.id;[cite: 5]
-            document.getElementById('edit-goods-category').value = item.category || '地图画';[cite: 5]
-            document.getElementById('edit-goods-channel').value = item.sales_channel || '湘江港地下商业街右侧头铺最底层';[cite: 5]
-            document.getElementById('edit-goods-title').value = item.title || '';[cite: 5]
-            document.getElementById('edit-goods-price').value = item.price || '';[cite: 5]
-            document.getElementById('edit-goods-desc').value = item.description || '';[cite: 5]
-            document.getElementById('edit-goods-file').value = '';[cite: 5]
-            document.getElementById('edit-goods-modal').classList.remove('hidden');[cite: 5]
+        function openEditGoodsModal(id) {
+            if (!currentUser) return alert("只有管理员可以修改商品！");
+            const item = goodsData.find(g => g.id === id);
+            if (!item) return;
+            document.getElementById('edit-goods-id').value = item.id;
+            document.getElementById('edit-goods-category').value = item.category || '地图画';
+            document.getElementById('edit-goods-channel').value = item.sales_channel || '湘江港地下商业街右侧头铺最底层';
+            document.getElementById('edit-goods-title').value = item.title || '';
+            document.getElementById('edit-goods-price').value = item.price || '';
+            document.getElementById('edit-goods-desc').value = item.description || '';
+            document.getElementById('edit-goods-file').value = '';
+            document.getElementById('edit-goods-modal').classList.remove('hidden');
         }
-
-        function closeEditGoodsModal() {[cite: 5]
-            document.getElementById('edit-goods-modal').classList.add('hidden');[cite: 5]
+        function closeEditGoodsModal() {
+            document.getElementById('edit-goods-modal').classList.add('hidden');
         }
-
-        async function handleSaveEditGoods() {[cite: 5]
-            if (!currentUser) return alert("只有管理员可以修改商品！");[cite: 5]
-            const id = document.getElementById('edit-goods-id').value;[cite: 5]
-            const category = document.getElementById('edit-goods-category').value;[cite: 5]
-            const sales_channel = document.getElementById('edit-goods-channel').value.trim();[cite: 5]
-            const title = document.getElementById('edit-goods-title').value.trim();[cite: 5]
-            const price = document.getElementById('edit-goods-price').value.trim();[cite: 5]
-            const description = document.getElementById('edit-goods-desc').value.trim();[cite: 5]
-            const fileInput = document.getElementById('edit-goods-file');[cite: 5]
-            if (!title || !price) return alert("请填写完整的商品名称和报价！");[cite: 5]
-            const updateData = { category, sales_channel, title, price, description };[cite: 5]
-            if (fileInput.files.length > 0) {[cite: 5]
-                const file = fileInput.files[0];[cite: 5]
-                const fileName = `${Date.now()}_${file.name}`;[cite: 5]
-                const { error: uploadErr } = await dbClient.storage.from('shop-images').upload(fileName, file);[cite: 5]
-                if (!uploadErr) {[cite: 5]
-                    updateData.image_url = dbClient.storage.from('shop-images').getPublicUrl(fileName).data.publicUrl;[cite: 5]
+        async function handleSaveEditGoods() {
+            if (!currentUser) return alert("只有管理员可以修改商品！");
+            const id = document.getElementById('edit-goods-id').value;
+            const category = document.getElementById('edit-goods-category').value;
+            const sales_channel = document.getElementById('edit-goods-channel').value.trim();
+            const title = document.getElementById('edit-goods-title').value.trim();
+            const price = document.getElementById('edit-goods-price').value.trim();
+            const description = document.getElementById('edit-goods-desc').value.trim();
+            const fileInput = document.getElementById('edit-goods-file');
+            if (!title || !price) return alert("请填写完整的商品名称和报价！");
+            const updateData = { category, sales_channel, title, price, description };
+            if (fileInput.files.length > 0) {
+                const file = fileInput.files[0];
+                const fileName = `${Date.now()}_${file.name}`;
+                const { error: uploadErr } = await dbClient.storage.from('shop-images').upload(fileName, file);
+                if (!uploadErr) {
+                    updateData.image_url = dbClient.storage.from('shop-images').getPublicUrl(fileName).data.publicUrl;
                 }
             }
-            const { error } = await dbClient.from('goods').update(updateData).eq('id', id);[cite: 5]
-            if (error) {[cite: 5]
-                alert("修改商品失败：" + error.message);[cite: 5]
+            const { error } = await dbClient.from('goods').update(updateData).eq('id', id);
+            if (error) {
+                alert("修改商品失败：" + error.message);
             } else {
-                alert('商品信息已成功修改！');[cite: 5]
-                closeEditGoodsModal();[cite: 5]
-                loadGoods();[cite: 5]
+                alert('商品信息已成功修改！');
+                closeEditGoodsModal();
+                loadGoods();
             }
         }
-
-        async function moveGoods(currentIndex, direction) {[cite: 5]
-            if (!currentUser) return alert("只有管理员可以调整摆放顺序！");[cite: 5]
-            const keyword = document.getElementById('search-input')?.value.trim().toLowerCase() || '';[cite: 5]
-            const filtered = goodsData.filter(g => {[cite: 5]
-                const matchKeyword = (g.title || '').toLowerCase().includes(keyword);[cite: 5]
-                const gCategory = g.category || '地图画';[cite: 5]
-                const matchCategory = (currentGoodsCategory === 'all') || (gCategory === currentGoodsCategory);[cite: 5]
-                return matchKeyword && matchCategory;[cite: 5]
+        async function moveGoods(currentIndex, direction) {
+            if (!currentUser) return alert("只有管理员可以调整摆放顺序！");
+            const keyword = document.getElementById('search-input')?.value.trim().toLowerCase() || '';
+            const filtered = goodsData.filter(g => {
+                const matchKeyword = (g.title || '').toLowerCase().includes(keyword);
+                const gCategory = g.category || '地图画';
+                const matchCategory = (currentGoodsCategory === 'all') || (gCategory === currentGoodsCategory);
+                return matchKeyword && matchCategory;
             });
-            const targetIndex = direction === 'up' ? currentIndex - 1 : currentIndex + 1;[cite: 5]
-            if (targetIndex < 0 || targetIndex >= filtered.length) return;[cite: 5]
-            const itemA = filtered[currentIndex];[cite: 5]
-            const itemB = filtered[targetIndex];[cite: 5]
-            const indexA = goodsData.findIndex(g => g.id === itemA.id);[cite: 5]
-            const indexB = goodsData.findIndex(g => g.id === itemB.id);[cite: 5]
-            if (indexA !== -1 && indexB !== -1) {[cite: 5]
-                const temp = goodsData[indexA];[cite: 5]
-                goodsData[indexA] = goodsData[indexB];[cite: 5]
-                goodsData[indexB] = temp;[cite: 5]
+            const targetIndex = direction === 'up' ? currentIndex - 1 : currentIndex + 1;
+            if (targetIndex < 0 || targetIndex >= filtered.length) return;
+            const itemA = filtered[currentIndex];
+            const itemB = filtered[targetIndex];
+            const indexA = goodsData.findIndex(g => g.id === itemA.id);
+            const indexB = goodsData.findIndex(g => g.id === itemB.id);
+            if (indexA !== -1 && indexB !== -1) {
+                const temp = goodsData[indexA];
+                goodsData[indexA] = goodsData[indexB];
+                goodsData[indexB] = temp;
             }
-            for (let i = 0; i < goodsData.length; i++) {[cite: 5]
-                goodsData[i].sort_order = i + 1;[cite: 5]
+            for (let i = 0; i < goodsData.length; i++) {
+                goodsData[i].sort_order = i + 1;
             }
-            renderGoods();[cite: 5]
+            renderGoods();
             try {
                 await Promise.all([
-                    dbClient.from('goods').update({ sort_order: goodsData[indexA].sort_order }).eq('id', goodsData[indexA].id),[cite: 5]
-                    dbClient.from('goods').update({ sort_order: goodsData[indexB].sort_order }).eq('id', goodsData[indexB].id)[cite: 5]
+                    dbClient.from('goods').update({ sort_order: goodsData[indexA].sort_order }).eq('id', goodsData[indexA].id),
+                    dbClient.from('goods').update({ sort_order: goodsData[indexB].sort_order }).eq('id', goodsData[indexB].id)
                 ]);
             } catch (e) {
-                console.error("更新排序保存至数据库失败:", e);[cite: 5]
+                console.error("更新排序保存至数据库失败:", e);
             }
         }
-
-        async function deleteGoods(id) {[cite: 5]
-            if (!currentUser) return alert("只有管理员才能删除！");[cite: 5]
-            if (confirm('确定删除商品？')) { await dbClient.from('goods').delete().eq('id', id); loadGoods(); }[cite: 5]
+        async function deleteGoods(id) {
+            if (!currentUser) return alert("只有管理员才能删除！");
+            if (confirm('确定删除商品？')) { await dbClient.from('goods').delete().eq('id', id); loadGoods(); }
         }
-
         // --- 采购看板 ---
-        async function loadOrders() {[cite: 5]
-            const { data } = await dbClient.from('orders').select('*').order('id', { ascending: false });[cite: 5]
-            ordersData = data || []; renderOrders();[cite: 5]
+        async function loadOrders() {
+            const { data } = await dbClient.from('orders').select('*').order('id', { ascending: false });
+            ordersData = data || []; renderOrders();
         }
-
-        function renderOrders() {[cite: 5]
-            const container = document.getElementById('orders-list');[cite: 5]
-            const list = currentUser ? ordersData : ordersData.filter(o => o.is_public);[cite: 5]
-            if (!list.length) return container.innerHTML = `<p class="text-slate-500 text-center py-6 text-xs">暂无采购需求数据</p>`;[cite: 5]
+        function renderOrders() {
+            const container = document.getElementById('orders-list');
+            const list = currentUser ? ordersData : ordersData.filter(o => o.is_public);
+            if (!list.length) return container.innerHTML = `<p class="text-slate-500 text-center py-6 text-xs">暂无采购需求数据</p>`;
             container.innerHTML = list.map(o => `
                 <div class="bg-slate-900/80 p-3 rounded-lg border border-slate-700 text-xs space-y-2 ${o.is_completed ? 'opacity-60' : ''}">
                     <div class="flex justify-between items-center">
@@ -812,53 +763,47 @@
                     ${o.note ? `<p class="text-slate-400">备注: ${escapeHtml(o.note)}</p>` : ''}
                     ${currentUser ? `<div class="pt-2 border-t border-slate-800/80 flex justify-end"><button onclick="deleteOrder(${o.id})" class="text-rose-400 hover:underline text-[11px]">删除条目</button></div>` : ''}
                 </div>
-            `).join('');[cite: 5]
+            `).join('');
         }
-
-        async function toggleOrderCompleted(id, newStatus) {[cite: 5]
-            const { error } = await dbClient.from('orders').update({ is_completed: newStatus }).eq('id', id);[cite: 5]
-            if (error) alert("更新状态失败: " + error.message);[cite: 5]
-            else loadOrders();[cite: 5]
+        async function toggleOrderCompleted(id, newStatus) {
+            const { error } = await dbClient.from('orders').update({ is_completed: newStatus }).eq('id', id);
+            if (error) alert("更新状态失败: " + error.message);
+            else loadOrders();
         }
-
-        async function toggleOrderPublic(id, newStatus) {[cite: 5]
-            if (!currentUser) return alert("只有管理员可以操作放单公示！");[cite: 5]
-            const { error } = await dbClient.from('orders').update({ is_public: newStatus }).eq('id', id);[cite: 5]
-            if (error) alert("操作失败: " + error.message);[cite: 5]
-            else loadOrders();[cite: 5]
+        async function toggleOrderPublic(id, newStatus) {
+            if (!currentUser) return alert("只有管理员可以操作放单公示！");
+            const { error } = await dbClient.from('orders').update({ is_public: newStatus }).eq('id', id);
+            if (error) alert("操作失败: " + error.message);
+            else loadOrders();
         }
-
-        async function deleteOrder(id) {[cite: 5]
-            if (!currentUser) return alert("只有管理员可以删除！");[cite: 5]
-            if (confirm('确定删除此采购订单？')) {[cite: 5]
-                await dbClient.from('orders').delete().eq('id', id);[cite: 5]
-                loadOrders();[cite: 5]
+        async function deleteOrder(id) {
+            if (!currentUser) return alert("只有管理员可以删除！");
+            if (confirm('确定删除此采购订单？')) {
+                await dbClient.from('orders').delete().eq('id', id);
+                loadOrders();
             }
         }
-
-        async function handleCreateOrder(e) {[cite: 5]
-            e.preventDefault();[cite: 5]
-            await dbClient.from('orders').insert([{[cite: 5]
-                player_id: document.getElementById('order-player').value,[cite: 5]
-                items: document.getElementById('order-items').value,[cite: 5]
-                contact: document.getElementById('order-contact').value,[cite: 5]
-                note: document.getElementById('order-note').value,[cite: 5]
-                is_public: false, is_completed: false, status: '待处理'[cite: 5]
+        async function handleCreateOrder(e) {
+            e.preventDefault();
+            await dbClient.from('orders').insert([{ 
+                player_id: document.getElementById('order-player').value,
+                items: document.getElementById('order-items').value,
+                contact: document.getElementById('order-contact').value,
+                note: document.getElementById('order-note').value,
+                is_public: false, is_completed: false, status: '待处理'
             }]);
-            alert('提交成功！等待管理员审核放单。'); loadOrders();[cite: 5]
-            document.getElementById('order-form').reset();[cite: 5]
+            alert('提交成功！等待管理员审核放单。'); loadOrders();
+            document.getElementById('order-form').reset();
         }
-
         // --- 出售意向 ---
-        async function loadSells() {[cite: 5]
-            const { data } = await dbClient.from('sell_ideas').select('*').order('id', { ascending: false });[cite: 5]
-            sellData = data || []; renderSells();[cite: 5]
+        async function loadSells() {
+            const { data } = await dbClient.from('sell_ideas').select('*').order('id', { ascending: false });
+            sellData = data || []; renderSells();
         }
-
-        function renderSells() {[cite: 5]
-            const container = document.getElementById('sell-list');[cite: 5]
-            const list = currentUser ? sellData : sellData.filter(s => s.is_public);[cite: 5]
-            if (!list.length) return container.innerHTML = `<p class="text-slate-500 text-center py-6 text-xs">暂无出售意向数据</p>`;[cite: 5]
+        function renderSells() {
+            const container = document.getElementById('sell-list');
+            const list = currentUser ? sellData : sellData.filter(s => s.is_public);
+            if (!list.length) return container.innerHTML = `<p class="text-slate-500 text-center py-6 text-xs">暂无出售意向数据</p>`;
             container.innerHTML = list.map(s => `
                 <div class="bg-slate-900/80 p-3 rounded-lg border border-slate-700 text-xs space-y-2 ${s.is_completed ? 'opacity-60' : ''}">
                     <div class="flex justify-between items-center">
@@ -884,56 +829,50 @@
                     ${s.note ? `<p class="text-slate-400">备注: ${escapeHtml(s.note)}</p>` : ''}
                     ${currentUser ? `<div class="pt-2 border-t border-slate-800/80 flex justify-end"><button onclick="deleteSell(${s.id})" class="text-rose-400 hover:underline text-[11px]">删除条目</button></div>` : ''}
                 </div>
-            `).join('');[cite: 5]
+            `).join('');
         }
-
-        async function toggleSellCompleted(id, newStatus) {[cite: 5]
-            const { error } = await dbClient.from('sell_ideas').update({ is_completed: newStatus }).eq('id', id);[cite: 5]
-            if (error) alert("更新状态失败: " + error.message);[cite: 5]
-            else loadSells();[cite: 5]
+        async function toggleSellCompleted(id, newStatus) {
+            const { error } = await dbClient.from('sell_ideas').update({ is_completed: newStatus }).eq('id', id);
+            if (error) alert("更新状态失败: " + error.message);
+            else loadSells();
         }
-
-        async function toggleSellPublic(id, newStatus) {[cite: 5]
-            if (!currentUser) return alert("只有管理员可以操作放单公示！");[cite: 5]
-            const { error } = await dbClient.from('sell_ideas').update({ is_public: newStatus }).eq('id', id);[cite: 5]
-            if (error) alert("操作失败: " + error.message);[cite: 5]
-            else loadSells();[cite: 5]
+        async function toggleSellPublic(id, newStatus) {
+            if (!currentUser) return alert("只有管理员可以操作放单公示！");
+            const { error } = await dbClient.from('sell_ideas').update({ is_public: newStatus }).eq('id', id);
+            if (error) alert("操作失败: " + error.message);
+            else loadSells();
         }
-
-        async function deleteSell(id) {[cite: 5]
-            if (!currentUser) return alert("只有管理员可以删除！");[cite: 5]
-            if (confirm('确定删除此出售意向？')) {[cite: 5]
-                await dbClient.from('sell_ideas').delete().eq('id', id);[cite: 5]
-                loadSells();[cite: 5]
+        async function deleteSell(id) {
+            if (!currentUser) return alert("只有管理员可以删除！");
+            if (confirm('确定删除此出售意向？')) {
+                await dbClient.from('sell_ideas').delete().eq('id', id);
+                loadSells();
             }
         }
-
-        async function handleCreateSell(e) {[cite: 5]
-            e.preventDefault();[cite: 5]
-            await dbClient.from('sell_ideas').insert([{[cite: 5]
-                player_id: document.getElementById('sell-player').value,[cite: 5]
-                items: document.getElementById('sell-items').value,[cite: 5]
-                contact: document.getElementById('sell-contact').value,[cite: 5]
-                note: document.getElementById('sell-note').value,[cite: 5]
-                is_public: false, is_completed: false, status: '待联系'[cite: 5]
+        async function handleCreateSell(e) {
+            e.preventDefault();
+            await dbClient.from('sell_ideas').insert([{ 
+                player_id: document.getElementById('sell-player').value,
+                items: document.getElementById('sell-items').value,
+                contact: document.getElementById('sell-contact').value,
+                note: document.getElementById('sell-note').value,
+                is_public: false, is_completed: false, status: '待联系'
             }]);
-            alert('提交成功！等待管理员审核放单。'); loadSells();[cite: 5]
-            document.getElementById('sell-form').reset();[cite: 5]
+            alert('提交成功！等待管理员审核放单。'); loadSells();
+            document.getElementById('sell-form').reset();
         }
-
         // --- 副本组队逻辑 ---
-        async function loadTeams() {[cite: 5]
-            const { data, error } = await dbClient.from('teams').select('*').order('id', { ascending: false });[cite: 5]
-            if (error) return console.error("加载失败:", error);[cite: 5]
-            teamsData = data || [];[cite: 5]
-            renderTeams();[cite: 5]
+        async function loadTeams() {
+            const { data, error } = await dbClient.from('teams').select('*').order('id', { ascending: false });
+            if (error) return console.error("加载失败:", error);
+            teamsData = data || []; 
+            renderTeams();
         }
-
-        function renderTeams() {[cite: 5]
-            const container = document.getElementById('teams-list');[cite: 5]
-            if (!teamsData.length) return container.innerHTML = `<p class="text-slate-500 text-center py-6 text-xs">暂无组队帖</p>`;[cite: 5]
-            container.innerHTML = teamsData.map(t => {[cite: 5]
-                const replies = Array.isArray(t.replies) ? t.replies : [];[cite: 5]
+        function renderTeams() {
+            const container = document.getElementById('teams-list');
+            if (!teamsData.length) return container.innerHTML = `<p class="text-slate-500 text-center py-6 text-xs">暂无组队帖</p>`;
+            container.innerHTML = teamsData.map(t => {
+                const replies = Array.isArray(t.replies) ? t.replies : [];
                 return `
                 <div class="mc-card p-4 space-y-3 text-xs">
                     <div class="flex justify-between border-b border-slate-700/60 pb-2">
@@ -971,62 +910,57 @@
                     ${currentUser ? `<div class="pt-1"><button onclick="deleteTeam(${t.id})" class="text-rose-400 text-xs hover:underline">删除整个队伍帖子</button></div>` : ''}
                 </div>
                 `;
-            }).join('');[cite: 5]
+            }).join('');
         }
-
-        async function handleRemoveMember(teamId, memberIndex) {[cite: 5]
-            if (!confirm("确定移除该队员？")) return;[cite: 5]
-            const team = teamsData.find(t => t.id === teamId);[cite: 5]
-            if (!team) return;[cite: 5]
-            const currentReplies = Array.isArray(team.replies) ? team.replies : [];[cite: 5]
-            currentReplies.splice(memberIndex, 1);[cite: 5]
-            const { error } = await dbClient.from('teams').update({ replies: currentReplies }).eq('id', teamId);[cite: 5]
-            if (error) alert('移除队员失败: ' + error.message);[cite: 5]
-            else loadTeams();[cite: 5]
+        async function handleRemoveMember(teamId, memberIndex) {
+            if (!confirm("确定移除该队员？")) return;
+            const team = teamsData.find(t => t.id === teamId);
+            if (!team) return;
+            const currentReplies = Array.isArray(team.replies) ? team.replies : [];
+            currentReplies.splice(memberIndex, 1);
+            const { error } = await dbClient.from('teams').update({ replies: currentReplies }).eq('id', teamId);
+            if (error) alert('移除队员失败: ' + error.message);
+            else loadTeams();
         }
-
-        async function handleJoinTeam(teamId) {[cite: 5]
-            const playerInput = document.getElementById(`join-player-${teamId}`);[cite: 5]
-            const contactInput = document.getElementById(`join-contact-${teamId}`);[cite: 5]
-            const player = playerInput.value.trim();[cite: 5]
-            const contact = contactInput.value.trim();[cite: 5]
-            if (!player || !contact) return alert('请填写你的游戏 ID 和联系 QQ！');[cite: 5]
-            const team = teamsData.find(t => t.id === teamId);[cite: 5]
-            if (!team) return;[cite: 5]
-            const currentReplies = Array.isArray(team.replies) ? team.replies : [];[cite: 5]
-            const newReply = { player, contact, time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) };[cite: 5]
-            const updatedReplies = [...currentReplies, newReply];[cite: 5]
-            const { error } = await dbClient.from('teams').update({ replies: updatedReplies }).eq('id', teamId);[cite: 5]
-            if (error) alert('提交失败: ' + error.message);[cite: 5]
-            else { alert('申请成功！队长会通过 QQ 联系你。'); await loadTeams(); }[cite: 5]
+        async function handleJoinTeam(teamId) {
+            const playerInput = document.getElementById(`join-player-${teamId}`);
+            const contactInput = document.getElementById(`join-contact-${teamId}`);
+            const player = playerInput.value.trim();
+            const contact = contactInput.value.trim();
+            if (!player || !contact) return alert('请填写你的游戏 ID 和联系 QQ！');
+            const team = teamsData.find(t => t.id === teamId);
+            if (!team) return;
+            const currentReplies = Array.isArray(team.replies) ? team.replies : [];
+            const newReply = { player, contact, time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) };
+            const updatedReplies = [...currentReplies, newReply];
+            const { error } = await dbClient.from('teams').update({ replies: updatedReplies }).eq('id', teamId);
+            if (error) alert('提交失败: ' + error.message);
+            else { alert('申请成功！队长会通过 QQ 联系你。'); await loadTeams(); }
         }
-
-        async function handleCreateTeam(e) {[cite: 5]
-            e.preventDefault();[cite: 5]
-            const { error } = await dbClient.from('teams').insert([{[cite: 5]
-                dungeon_name: document.getElementById('team-dungeon').value,[cite: 5]
-                leader: document.getElementById('team-leader').value,[cite: 5]
-                qq: document.getElementById('team-qq').value,[cite: 5]
-                play_time: document.getElementById('team-play-time').value,[cite: 5]
-                need_members: document.getElementById('team-need').value,[cite: 5]
-                replies: [][cite: 5]
+        async function handleCreateTeam(e) {
+            e.preventDefault();
+            const { error } = await dbClient.from('teams').insert([{ 
+                dungeon_name: document.getElementById('team-dungeon').value,
+                leader: document.getElementById('team-leader').value,
+                qq: document.getElementById('team-qq').value,
+                play_time: document.getElementById('team-play-time').value,
+                need_members: document.getElementById('team-need').value,
+                replies: [] 
             }]);
-            if (error) return alert("发布失败: " + error.message);[cite: 5]
-            alert('组队招募发布成功！');[cite: 5]
-            document.getElementById('team-form').reset();[cite: 5]
-            await loadTeams();[cite: 5]
+            if (error) return alert("发布失败: " + error.message);
+            alert('组队招募发布成功！');
+            document.getElementById('team-form').reset();
+            await loadTeams();
         }
-
-        async function deleteTeam(id) {[cite: 5]
-            if (!currentUser) return alert("仅管理员可删除整个组队帖！");[cite: 5]
-            if (confirm('确定删除该组队帖？')) {[cite: 5]
-                await dbClient.from('teams').delete().eq('id', id);[cite: 5]
-                loadTeams();[cite: 5]
+        async function deleteTeam(id) {
+            if (!currentUser) return alert("仅管理员可删除整个组队帖！");
+            if (confirm('确定删除该组队帖？')) {
+                await dbClient.from('teams').delete().eq('id', id);
+                loadTeams();
             }
         }
-
-        function openAdminModal() { document.getElementById('admin-modal').classList.remove('hidden'); }[cite: 5]
-        function closeAdminModal() { document.getElementById('admin-modal').classList.add('hidden'); }[cite: 5]
+        function openAdminModal() { document.getElementById('admin-modal').classList.remove('hidden'); }
+        function closeAdminModal() { document.getElementById('admin-modal').classList.add('hidden'); }
     </script>
 </body>
 </html>
