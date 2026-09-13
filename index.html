@@ -184,7 +184,8 @@
                         ➕ 添加新会员公示
                     </button>
                 </div>
-                <div id="vip-members-list" class="grid grid-cols-1 md:grid-cols-2 gap-8"></div>
+                <!-- 调整为一行展示3个会员 -->
+                <div id="vip-members-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
             </div>
         </section>
     </main>
@@ -260,7 +261,7 @@
                 </div>
                 <div>
                     <label class="block text-xs text-slate-400 mb-1">报价</label>
-                    <input type="text" id="edit-goods-price" class="w-full p-2 bg-slate-800 border border-slate-700 rounded outline-none">
+                    <input type="text" id="edit-goods-price" placeholder="例如：100积分 / 50万" class="w-full p-2 bg-slate-800 border border-slate-700 rounded outline-none">
                 </div>
                 <div>
                     <label class="block text-xs text-slate-400 mb-1">更换图片 (可选，留空保留原图片)</label>
@@ -314,7 +315,7 @@
                         <input type="text" id="add-goods-channel" value="湘江港地下商业街右侧头铺最底层" placeholder="例如：湘江港地下商业街右侧头铺最底层" class="w-full p-2 bg-slate-800 border border-slate-700 rounded text-slate-200 outline-none">
                     </div>
                     <input type="text" id="add-goods-title" placeholder="商品名称" class="w-full p-2 bg-slate-800 border border-slate-700 rounded">
-                    <input type="text" id="add-goods-price" placeholder="报价" class="w-full p-2 bg-slate-800 border border-slate-700 rounded">
+                    <input type="text" id="add-goods-price" placeholder="报价（例如：100积分 / 50万金币）" class="w-full p-2 bg-slate-800 border border-slate-700 rounded">
                     <input type="file" id="add-goods-file" accept="image/*" class="w-full p-1 bg-slate-800 border border-slate-700 rounded text-xs text-slate-300">
                     <textarea id="add-goods-desc" placeholder="商品说明..." class="w-full p-2 bg-slate-800 border border-slate-700 rounded"></textarea>
                     <button onclick="handleAddGoods()" class="w-full py-2 bg-emerald-600 hover:bg-emerald-500 font-bold rounded">保存商品</button>
@@ -427,7 +428,7 @@
             }
             container.innerHTML = vipData.map(v => `
                 <div class="mc-card overflow-hidden flex flex-col justify-between border border-amber-500/30 hover:border-amber-500/60 transition-all duration-300 shadow-xl">
-                    <div class="relative h-[480px] bg-slate-900/90 flex items-center justify-center p-3 border-b border-slate-800">
+                    <div class="relative h-[360px] bg-slate-900/90 flex items-center justify-center p-3 border-b border-slate-800">
                         <span class="absolute top-3 left-3 bg-amber-500/20 text-amber-300 text-xs px-2.5 py-1 rounded border border-amber-500/40 font-bold z-10 shadow">
                             ${escapeHtml(v.level || '至尊VIP')}
                         </span>
@@ -436,14 +437,14 @@
                     
                     <div class="p-5 space-y-4">
                         <h3 class="font-extrabold text-2xl text-amber-200">${escapeHtml(v.name)}</h3>
-                        <div class="grid grid-cols-2 gap-3 bg-slate-900/80 p-3.5 rounded-lg border border-slate-800 text-sm">
-                            <div>💰 余额: <span class="text-emerald-400 font-bold text-base ml-1">${escapeHtml(v.balance || '0')}</span></div>
-                            <div>🪙 积分: <span class="text-amber-400 font-bold text-base ml-1">${v.points || 0}</span></div>
+                        <div class="grid grid-cols-2 gap-2 bg-slate-900/80 p-3 rounded-lg border border-slate-800 text-xs md:text-sm">
+                            <div>💰 余额: <span class="text-emerald-400 font-bold text-sm md:text-base ml-0.5">${escapeHtml(v.balance || '0')}</span></div>
+                            <div>🪙 积分: <span class="text-amber-400 font-bold text-sm md:text-base ml-0.5">${v.points || 0}</span></div>
                         </div>
-                        <p class="text-sm text-slate-300 leading-relaxed min-h-[2.5rem]">${escapeHtml(v.description || '暂无特权说明')}</p>
+                        <p class="text-xs md:text-sm text-slate-300 leading-relaxed min-h-[2.5rem]">${escapeHtml(v.description || '暂无特权说明')}</p>
                     </div>
                     ${currentUser ? `
-                        <div class="p-4 border-t border-slate-700/60 bg-slate-900/50 flex justify-end space-x-4 text-xs">
+                        <div class="p-3 border-t border-slate-700/60 bg-slate-900/50 flex justify-end space-x-4 text-xs">
                             <button onclick="openVipModal(${v.id})" class="text-amber-400 hover:underline font-semibold">修改信息</button>
                             <button onclick="deleteVipMember(${v.id})" class="text-rose-400 hover:underline font-semibold">删除</button>
                         </div>
@@ -621,7 +622,6 @@
             }
             const minOrder = goodsData.length > 0 ? Math.min(...goodsData.map(g => g.sort_order || 0)) - 1 : 1;
             
-            // 兼容性写入
             const payload = { category, sales_channel, title, price, image_url, description, sort_order: minOrder };
             let { error } = await dbClient.from('goods').insert([payload]);
             if (error && error.message.includes('sort_order')) {
